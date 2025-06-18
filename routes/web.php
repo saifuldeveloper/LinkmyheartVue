@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\Frontend\AuthController;
 use App\Http\Controllers\Frontend\HomeController;
+use App\Http\Controllers\Frontend\MatchesController;
 use App\Http\Controllers\Frontend\PagesController;
+use App\Http\Controllers\Frontend\UserProfileController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -29,29 +31,25 @@ Route::post('/register-otp-verify', [AuthController::class, 'registerOtpVerify']
 Route::post('/registration', [AuthController::class, 'registration'])->name('registration');
 
 
-// Route::get('/', function () {
-//     return Inertia::render('Welcome', [
-//         'canLogin' => Route::has('login'),
-//         'canRegister' => Route::has('register'),
-//         'laravelVersion' => Application::VERSION,
-//         'phpVersion' => PHP_VERSION,
-//     ]);
-// });
 
 Route::get('/dashboard', function () {
     return Inertia::render('Frontend/Pages/User/Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    Route::group(['prefix' => 'user'], function () {
+        Route::get('/partner-preference', [UserProfileController::class, 'partnerPreference'])->name('partner.preference');
+        Route::post('/partner-preference/update', [UserProfileController::class, 'partnerPreferenceUpdate'])->name('partner.preference.update');
+        Route::get('/profile', [UserProfileController::class, 'edit'])->name('profile.edit');
+        Route::get('/matches', [MatchesController::class, 'matches'])->name('user.matches');
+
+    });
 
 
 
-
-
-    
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    // Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    // Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    // Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

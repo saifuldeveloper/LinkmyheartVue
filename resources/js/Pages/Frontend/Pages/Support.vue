@@ -45,22 +45,3 @@ import Navbar from '../Layouts/Navbar.vue';
     <Footer />
   
 </template>
-
-<style scoped>
-.position-relative {
-  position: relative;
-}
-
-.top-Header-bottom-border {
-  margin: 0;
-  height: 3px;
-  background: linear-gradient(
-    90deg,
-    rgba(252, 202, 213, 0) 0%,
-    rgba(244, 54, 98, 1) 50%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  width: 100%;
-  border: none;
-}
-</style>

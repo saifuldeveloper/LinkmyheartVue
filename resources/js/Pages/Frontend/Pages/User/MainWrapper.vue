@@ -1,6 +1,7 @@
 <script setup>
 import Navbar from '../../Layouts/Navbar.vue';
 import Sidebar from './Sidebar.vue';
+import Footer from '../../Layouts/Footer.vue';
 </script>
 <template>
   <div>
@@ -9,9 +10,10 @@ import Sidebar from './Sidebar.vue';
     </div>
     <div class="flex min-h-screen">
       <Sidebar />
-      <main class="flex-1 p-6 bg-gray-50">
+      <main class="flex-1 bg-gray-50">
         <slot />
       </main>
     </div>
   </div>
+      <Footer />
 </template>

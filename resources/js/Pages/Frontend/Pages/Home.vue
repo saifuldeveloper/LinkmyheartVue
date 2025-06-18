@@ -2,7 +2,9 @@
 import { ref } from 'vue';
 import Footer from '../Layouts/Footer.vue';
 import Navbar from '../Layouts/Navbar.vue';
-import { Link,usePage } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
+
+
 
 
 </script>

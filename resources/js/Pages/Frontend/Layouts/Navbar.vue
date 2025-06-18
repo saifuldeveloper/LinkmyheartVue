@@ -2,19 +2,11 @@
 import { ref, reactive, onMounted, nextTick, computed } from 'vue';
 import { Link, router, usePage } from '@inertiajs/vue3';
 
-
-
 const user = computed(() => usePage().props.auth?.user)
-
-
-
 const isOpen = ref(false);
 const showRegister = ref(false)
 const step = ref(1)
 const showModal = ref(true)
-
-
-
 const form = reactive({
   name: '',
   gender: '',
@@ -170,6 +162,13 @@ function resetForm() {
   }
   otp.value = ['', '', '', '', '', '']
 }
+
+
+
+// home page nav deisng 
+const page = usePage()
+const isHomePage = page.url === '/'
+
 </script>
 
 <template>
@@ -230,7 +229,7 @@ function resetForm() {
         </button>
       </div>
 
-      
+
 
       <div v-if="showRegister" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <!-- Modal Box -->
@@ -333,4 +332,22 @@ function resetForm() {
 
     </nav>
   </div>
+  <hr v-if="!isHomePage" class="top-Header-bottom-border" />
 </template>
+
+<style scoped>
+.position-relative {
+  position: relative;
+}
+
+.top-Header-bottom-border {
+  margin: 0;
+  height: 3px;
+  background: linear-gradient(90deg,
+      rgba(252, 202, 213, 0) 0%,
+      rgba(244, 54, 98, 1) 50%,
+      rgba(255, 255, 255, 0) 100%);
+  width: 100%;
+  border: none;
+}
+</style>
