@@ -1,0 +1,397 @@
+
+
+
+
+
+<template>
+  <div class="flex h-screen bg-gray-100 font-sans">
+    <aside class="w-72 bg-white p-6 shadow-md overflow-y-auto flex-shrink-0">
+      <div class="mb-8">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">ফিল্টার সমূহ</h2>
+      </div>
+
+      <div class="mb-6 border-b border-gray-200 pb-4">
+        <button
+          @click="toggleFilterSection('primary')"
+          class="flex items-center justify-between w-full text-lg font-semibold text-gray-700 mb-4 focus:outline-none"
+        >
+          প্রাথমিক
+          <svg
+            class="w-5 h-5 text-gray-500 transition-transform duration-200"
+            :class="{ 'rotate-180': primaryFilterOpen }"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+          </svg>
+        </button>
+        <div v-if="primaryFilterOpen" class="space-y-4">
+          <div>
+            <label for="you_are" class="block text-sm font-medium text-gray-600 mb-1">তুমি কি</label>
+            <select
+              id="you_are"
+              v-model="filters.youAre"
+              class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm text-gray-700"
+            >
+              <option value="">নির্বাচন করুন</option>
+              <option value="male">পুরুষ</option>
+              <option value="female">মহিলা</option>
+            </select>
+          </div>
+          <div>
+            <label for="division" class="block text-sm font-medium text-gray-600 mb-1">বিভাগ</label>
+            <select
+              id="division"
+              v-model="filters.division"
+              class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm text-gray-700"
+            >
+              <option value="">নির্বাচন করুন</option>
+              <option value="dhaka">ঢাকা</option>
+              <option value="chittagong">চট্টগ্রাম</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-6 border-b border-gray-200 pb-4">
+        <button
+          @click="toggleFilterSection('maritalStatus')"
+          class="flex items-center justify-between w-full text-lg font-semibold text-gray-700 mb-4 focus:outline-none"
+        >
+          বৈবাহিক অবস্থা
+          <svg
+            class="w-5 h-5 text-gray-500 transition-transform duration-200"
+            :class="{ 'rotate-180': maritalStatusFilterOpen }"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+          </svg>
+        </button>
+        <div v-if="maritalStatusFilterOpen" class="space-y-4">
+          <div>
+            <label for="status" class="block text-sm font-medium text-gray-600 mb-1">অবস্থা</label>
+            <select
+              id="status"
+              v-model="filters.maritalStatus"
+              class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm text-gray-700"
+            >
+              <option value="">নির্বাচন করুন</option>
+              <option value="single">অবিবাহিত</option>
+              <option value="married">বিবাহিত</option>
+            </select>
+          </div>
+          <div>
+            <label for="age-range" class="block text-sm font-medium text-gray-600 mb-2">বয়স</label>
+            <div class="flex items-center justify-between text-gray-700 text-sm mb-2">
+              <span>{{ filters.ageRange[0] }}</span>
+              <span>{{ filters.ageRange[1] }}</span>
+            </div>
+            <input
+              type="range"
+              id="age-range"
+              min="18"
+              max="50"
+              v-model.number="filters.ageRange[0]"
+              class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer range-sm accent-purple-600"
+            />
+            </div>
+        </div>
+      </div>
+
+      <div v-for="(section, index) in otherFilterSections" :key="index" class="mb-6 border-b border-gray-200 pb-4">
+        <button
+          @click="toggleFilterSection(section.key)"
+          class="flex items-center justify-between w-full text-lg font-semibold text-gray-700 focus:outline-none"
+        >
+          {{ section.name }}
+          <svg
+            class="w-5 h-5 text-gray-500 transition-transform duration-200"
+            :class="{ 'rotate-180': openSections[section.key] }"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </button>
+        <div v-if="openSections[section.key]" class="mt-4 text-gray-600 text-sm">
+          <p>Filter options for {{ section.name }}...</p>
+        </div>
+      </div>
+    </aside>
+
+    <main class="flex-1 p-8 overflow-y-auto">
+      <div class="flex justify-between items-center bg-white p-4 rounded-lg shadow-md mb-6">
+        <div class="flex space-x-6 text-gray-700 font-medium">
+          <a href="#" class="border-b-2 border-purple-600 pb-2 text-purple-600">সকল সমূহ</a>
+          <a href="#" class="pb-2 hover:text-purple-600 hover:border-purple-600">বায়োডাটা নং</a>
+        </div>
+        <div class="text-gray-600 text-sm">
+          <h1 class="text-xl font-bold text-gray-800">বায়োডাটা সমূহ</h1>
+          <p>৭৮০৩ টি বায়োডাটা পাওয়া গেছে!</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div v-for="biodata in paginatedBiodata" :key="biodata.id" class="bg-white p-6 rounded-lg shadow-md flex flex-col items-center text-center">
+          <div class="flex items-center justify-between w-full mb-4">
+            <span class="text-sm font-semibold text-purple-600">{{ biodata.id }}</span>
+            <button class="text-gray-400 hover:text-purple-600">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg>
+            </button>
+          </div>
+          <div class="w-24 h-24 rounded-full bg-gray-200 mb-4 overflow-hidden flex items-center justify-center">
+              <img :src="biodata.image" alt="Profile" class="w-full h-full object-cover" v-if="biodata.image">
+              <svg v-else class="w-16 h-16 text-gray-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clip-rule="evenodd"></path></svg>
+          </div>
+          <h3 class="text-lg font-bold text-gray-800 mb-1">{{ biodata.name }}</h3>
+          <p class="text-sm text-gray-600 mb-2">বয়স - {{ biodata.age }}</p>
+          <p class="text-sm text-gray-600 mb-2">উচ্চতা - {{ biodata.height }}</p>
+          <p class="text-sm text-gray-600 mb-4">{{ biodata.description }}</p>
+          <button class="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition duration-200">
+            বায়োডাটা টি
+          </button>
+        </div>
+      </div>
+
+      <div class="flex justify-center items-center space-x-2">
+        <button
+          @click="prevPage"
+          :disabled="currentPage === 1"
+          class="p-2 rounded-full text-gray-500 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+        </button>
+        <button
+          v-for="page in totalPages"
+          :key="page"
+          @click="goToPage(page)"
+          class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-medium transition duration-200"
+          :class="{ 'bg-purple-600 text-white': currentPage === page, 'bg-gray-200 text-gray-700 hover:bg-gray-300': currentPage !== page }"
+        >
+          {{ page }}
+        </button>
+        <button
+          @click="nextPage"
+          :disabled="currentPage === totalPages"
+          class="p-2 rounded-full text-gray-500 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        </button>
+      </div>
+    </main>
+  </div>
+</template>
+
+<script setup>
+import { ref, reactive, computed } from 'vue';
+
+// Filter State (reactive data for user selections)
+const filters = reactive({
+  youAre: '',
+  division: '',
+  maritalStatus: '',
+  ageRange: [18, 50], // Initial min and max age for the slider
+});
+
+// State for controlling the open/closed state of filter sections (accordion)
+const primaryFilterOpen = ref(true); // Assuming 'প্রাথমিক' is open by default
+const maritalStatusFilterOpen = ref(true); // Assuming 'বৈবাহিক অবস্থা' is open by default
+
+// Reactive object to manage the open state of other filter sections
+const openSections = reactive({
+  address: false,
+  education: false,
+  personal: false,
+  profession: false,
+  other: false,
+});
+
+// Data for iterating and rendering other filter sections
+const otherFilterSections = [
+  { key: 'address', name: 'ঠিকানা' },
+  { key: 'education', name: 'শিক্ষা' },
+  { key: 'personal', name: 'ব্যক্তিগত' },
+  { key: 'profession', name: 'পেশা' },
+  { key: 'other', name: 'অন্যান্য' },
+];
+
+// Function to toggle the open/closed state of a filter section
+const toggleFilterSection = (sectionKey) => {
+  if (sectionKey === 'primary') {
+    primaryFilterOpen.value = !primaryFilterOpen.value;
+  } else if (sectionKey === 'maritalStatus') {
+    maritalStatusFilterOpen.value = !maritalStatusFilterOpen.value;
+  } else {
+    openSections[sectionKey] = !openSections[sectionKey];
+  }
+};
+
+// Biodata Data (Example Data - in a real app, this would come from an API)
+const allBiodata = ref([
+  {
+    id: 'ODM-1477',
+    name: 'আব্দুল্লাহ',
+    age: 26,
+    height: '৫\' ৪\'\'',
+    description: 'মেঘ - নরসিংদী চৌধুরী',
+    image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P1', // Placeholder image
+  },
+  {
+    id: 'ODF-16889',
+    name: 'রাবিয়া',
+    age: 22,
+    height: '৫\' ১\'\'',
+    description: 'পূর্ব - জয়ী',
+    image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P2',
+  },
+  {
+    id: 'ODF-20999',
+    name: 'তানিয়া',
+    age: 25,
+    height: '৫\' ০\'\'',
+    description: 'পূর্ব - ফারি',
+    image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P3',
+  },
+  {
+    id: 'ODM-1127',
+    name: 'হাসান',
+    age: 28,
+    height: '৫\' ৪\'\'',
+    description: 'পূর্ব - ঢাকা',
+    image: '', // Example with no image
+  },
+  {
+    id: 'ODF-10359',
+    name: 'শারমিন',
+    age: 24,
+    height: '৫\' ২\'\'',
+    description: 'পূর্ব - যশোর',
+    image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P5',
+  },
+  {
+    id: 'ODM-14221',
+    name: 'রহিম',
+    age: 26,
+    height: '৫\' ০\'\'',
+    description: 'দেশ - বেনিয়ারী চৌধুরী',
+    image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P6',
+  },
+  {
+    id: 'ODF-21633',
+    name: 'সাথী',
+    age: 21,
+    height: '৫\' ৬\'\'',
+    description: 'পূর্ব - উল্লাহ পাখা',
+    image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P7',
+  },
+  {
+    id: 'ODF-21656',
+    name: 'নাসরিন',
+    age: 21,
+    height: '৫\' ১\'\'',
+    description: 'পূর্ব - উল্লাহ পাখা',
+    image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P8',
+  },
+  {
+    id: 'ODF-16442',
+    name: 'লিপি',
+    age: 20,
+    height: '৫\' ০\'\'',
+    description: 'পূর্ব - উল্লাহ পাখা',
+    image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P9',
+  },
+  {
+    id: 'ODM-1001',
+    name: 'কামাল',
+    age: 30,
+    height: '৫\' ৮\'\'',
+    description: 'ঢাকা - মীরপুর',
+    image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P10',
+  },
+  {
+    id: 'ODF-22001',
+    name: 'সুমাইয়া',
+    age: 23,
+    height: '৫\' ৩\'\'',
+    description: 'খুলনা - সদর',
+    image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P11',
+  },
+  {
+    id: 'ODM-15002',
+    name: 'আরিফ',
+    age: 27,
+    height: '৫\' ৭\'\'',
+    description: 'সিলেট - উপশহর',
+    image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P12',
+  },
+]);
+
+// Pagination Logic
+const itemsPerPage = 9; // Display 9 items per page (3 rows of 3 cards)
+const currentPage = ref(1); // Current active page
+
+// Computed property to calculate total number of pages
+const totalPages = computed(() => {
+  return Math.ceil(allBiodata.value.length / itemsPerPage);
+});
+
+// Computed property to get biodata for the current page
+const paginatedBiodata = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage;
+  const end = start + itemsPerPage;
+  return allBiodata.value.slice(start, end);
+});
+
+// Function to navigate to a specific page
+const goToPage = (page) => {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page;
+  }
+};
+
+// Function to go to the next page
+const nextPage = () => {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value++;
+  }
+};
+
+// Function to go to the previous page
+const prevPage = () => {
+  if (currentPage.value > 1) {
+    currentPage.value--;
+  }
+};
+</script>
+
+<style scoped>
+/*
+  Scoped styles ensure these only apply to this component.
+  You can put any custom CSS here that isn't easily handled by Tailwind utilities.
+
+  For example, if you need a custom scrollbar style for the sidebar:
+*/
+/*
+.custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+*/
+</style>
