@@ -3,13 +3,13 @@ import MainWrapper from './MainWrapper.vue';
 </script>
 <template>
     <MainWrapper>
-        <div>
-            <div class="text-center mb-6">
+        <div class="py-5 px-5">
+            <!-- <div class="text-center mb-6">
                 <button
                     class=" text-white px-6 py-2 rounded-full text-lg font-bold   gap-2 border border-[#ddd] bg-gradient-to-r from-[#f50536bf] to-[#260000b8] ">
                     Your Information
                 </button>
-            </div>
+            </div> -->
             <!-- Stats -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class=" text-dark rounded-lg p-6 text-center shadow-md bg-[#fac0c0] position-relative">

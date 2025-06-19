@@ -41,7 +41,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/partner-preference', [UserProfileController::class, 'partnerPreference'])->name('partner.preference');
         Route::post('/partner-preference/update', [UserProfileController::class, 'partnerPreferenceUpdate'])->name('partner.preference.update');
         Route::get('/profile', [UserProfileController::class, 'edit'])->name('profile.edit');
-        Route::get('/matches', [MatchesController::class, 'matches'])->name('user.matches');
+        Route::get('/matches', [MatchesController::class, 'matches'])->name(name: 'user.matches');
+        Route::get('/verify/account', [UserProfileController::class, 'verifyAccount'])->name('verify.account');
+        Route::get('/profile/contact', [UserProfileController::class, 'ProfileContact'])->name('user.profile.contact');
 
     });
 

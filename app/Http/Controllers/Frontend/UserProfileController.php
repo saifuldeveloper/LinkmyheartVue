@@ -17,4 +17,12 @@ class UserProfileController extends Controller
     public function edit(){
         return Inertia::render('Frontend/Pages/User/Profile'); 
     }
+
+    public function verifyAccount(){
+        return Inertia::render('Frontend/Pages/User/Verification');
+    }
+
+    public function ProfileContact(){
+        return Inertia::render('Frontend/Pages/User/ProfileContact');
+    }
 }

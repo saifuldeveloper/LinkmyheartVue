@@ -306,7 +306,7 @@ const prevPage = () => {
             </button>
           </div>
           <div class="w-24 h-24 rounded-full bg-red-100 mb-4 overflow-hidden flex items-center justify-center">
-            <img :src="biodata.image" alt="" class="w-full h-full object-cover" v-if="biodata.image">
+            <img :src="biodata.image" alt="" class="w-full  object-cover" v-if="biodata.image">
             <svg v-else class="w-16 h-16 text-gray-500" fill="currentColor" viewBox="0 0 20 20"
               xmlns="http://www.w3.org/2000/svg">
               <path fill-rule="evenodd"

@@ -35,8 +35,11 @@ const isRouteActive = (name) => {
             <Link :href="route('profile.edit')" :class="['flex items-center gap-3 p-2 rounded hover:bg-red-200',isRouteActive('profile.edit') ? 'bg-red-200 font-bold text-red-600' : '']">
                 <i class="fas fa-cog w-5"></i><span>Profile</span>
             </Link>
-            <Link href="#" class="flex items-center gap-2 p-2 rounded hover:bg-red-200">
+            <Link :href="route('verify.account')" :class="['flex items-center gap-3 p-2 rounded hover:bg-red-200',isRouteActive('verify.account') ? 'bg-red-200 font-bold text-red-600' : '']">
             <i class="fas fa-file-download w-5"></i> <span>Verification</span>
+            </Link>
+            <Link :href="route('user.profile.contact')" :class="['flex items-center gap-3 p-2 rounded hover:bg-red-200',isRouteActive('user.profile.contact') ? 'bg-red-200 font-bold text-red-600' : '']">
+                <i class="fas fa-cog w-5"></i><span>Profile Contact</span>
             </Link>
             <Link :href="route('partner.preference')" :class="['flex items-center gap-3 p-2 rounded hover:bg-red-200',isRouteActive('partner.preference') ? 'bg-red-200 font-bold text-red-600' : '']">
                 <i class="fas fa-cog w-5"></i><span>Partner Preference</span>
