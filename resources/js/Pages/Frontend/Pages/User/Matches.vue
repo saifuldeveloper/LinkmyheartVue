@@ -1,6 +1,7 @@
 <script setup>
 import MainWrapper from './MainWrapper.vue';
 import { ref, reactive, computed } from 'vue';
+import { router } from '@inertiajs/vue3'
 const allBiodata = ref([
   {
     id: 'ODM-1477',
@@ -178,7 +179,7 @@ const prevPage = () => {
           <p class="text-sm text-gray-600 mb-2">Age - {{ biodata.age }}</p>
           <p class="text-sm text-gray-600 mb-2">height - {{ biodata.height }}</p>
           <p class="text-sm text-gray-600 mb-4">{{ biodata.description }}</p>
-          <button class=" px-4 py-2 rounded-md bg-gradient-to-r from-[#f50536bf] to-[#260000b8] text-white transition duration-200">
+          <button @click="router.visit(route('matches.profile.view'))" class=" px-4 py-2 rounded-md bg-gradient-to-r from-[#f50536bf] to-[#260000b8] text-white transition duration-200">
             <i class="bi bi-eye-fill"></i> View Details
           </button>
         </div>

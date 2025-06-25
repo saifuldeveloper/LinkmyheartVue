@@ -12,4 +12,8 @@ class MatchesController extends Controller
     public function matches(){
            return Inertia::render('Frontend/Pages/User/Matches'); 
     }
+
+    public function profileView(Request $request){
+         return Inertia::render('Frontend/Pages/User/MatchesProfile'); 
+    }
 }
