@@ -1,123 +1,167 @@
 <script setup>
-import MainWrapper from './MainWrapper.vue';
-import { ref } from 'vue'
+import MainWrapper from './MainWrapper.vue'
+import { useForm, usePage } from '@inertiajs/vue3'
+import { computed } from 'vue'
 
-const lookingFor = ref('Bride')
+const form = useForm({
+    looking_for: '',
+    from_age: '',
+    to_age: '',
+    marital_status: '',
+    religion: '',
+    location: '',
+    education: '',
+    height_from: '',
+    height_to: '',
+})
 
-const ages = Array.from({ length: 50 }, (_, i) => i + 18) // ages 18 to 67
+const page = usePage()
 
-const ageFrom = ref('')
-const ageTo = ref('')
+const flashSuccess = computed(() => page.props.flash?.success)
 
-const maritalStatus = ref('')
-const religion = ref('Islam')
-const location = ref('Dhaka')
-const education = ref('Secondary Education')
+const submit = () => {
+    form.post('/user/partner-preference/update')
+}
 
-const heightFrom = ref('')
-const heightTo = ref('')
+const ages = Array.from({ length: 80 }, (_, i) => i + 18)
+
+const heights = [
+    `4'0"`, `4'1"`, `4'2"`, `4'3"`, `4'4"`, `4'5"`, `4'6"`, `4'7"`, `4'8"`, `4'9"`, `4'10"`,
+    `4'11"`, `5'0"`, `5'1"`, `5'2"`, `5'3"`, `5'4"`, `5'5"`, `5'6"`, `5'7"`, `5'8"`, `5'9"`, `5'10"`, `5'11"`, `6'0"`,
+]
 </script>
+
 <template>
     <MainWrapper>
-        <div>
-            <section class="max-md mx-auto  md:w-1/1">
-                <div class=" mt-5 p-8 max-w-6xl mx-auto rounded-md  border border-red-300 font-sans">
-                    <h2 class="text-2xl font-semibold mb-6">
-                        Tell Us About Your Ideal Match Partner Preference ...
-                    </h2>
+        <div class="max-w-3xl mx-auto mt-10 p-6 bg-white shadow rounded">
+            <h2 class="text-2xl font-semibold mb-4">Partner Preference</h2>
 
-                    <!-- Looking For -->
-                    <div class="mb-6">
-                        <label class="block mb-1 font-semibold">Looking For</label>
-                        <div class="flex space-x-4">
-                            <button
-                                :class="['px-5 py-1 rounded-full border border-red', lookingFor === 'Groom' ? 'bg-white text-white border-[#ddd] bg-gradient-to-r from-[#f50536bf] to-[#260000b8] px-4 py-2 rounded-full' : '']"
-                                @click="lookingFor = 'Groom'">
-                                Groom
-                            </button>
-                            <button
-                                :class="['px-5 py-1 rounded-full border border-red', lookingFor === 'Bride' ? 'bg-white text-white border-[#ddd] bg-gradient-to-r from-[#f50536bf] to-[#260000b8] px-4 py-2 rounded-full' : '']"
-                                @click="lookingFor = 'Bride'">
-                                Bride
-                            </button>
-                        </div>
-                    </div>
+            <!-- ✅ Flash Success -->
+            <div v-if="flashSuccess" class="mb-4 text-green-700 bg-green-100 p-2 rounded">
+                {{ flashSuccess }}
+            </div>
 
-                    <!-- Partners Age -->
-                    <div class="mb-6 grid grid-cols-2 gap-4 max-w-lg">
-                        <label class="block col-span-2 font-semibold">Partners Age (Optional)</label>
-                        <select v-model="ageFrom" class="p-2 rounded border border-red-300 bg-red-200 ">
-                            <option disabled value="">Please Select</option>
-                            <option v-for="age in ages" :key="'from-' + age" :value="age">{{ age }}</option>
+            <form @submit.prevent="submit" class="space-y-6">
+
+                <!-- Looking For -->
+                <div>
+                    <label class="font-semibold">Looking For</label>
+                    <select v-model="form.looking_for" class="w-full p-2 border rounded bg-red-100">
+                        <option disabled value="">Select</option>
+                        <option>Bride</option>
+                        <option>Groom</option>
+                    </select>
+                    <span v-if="form.errors.looking_for" class="text-red-600">{{ form.errors.looking_for }}</span>
+                </div>
+
+                <!-- Age -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="font-semibold">From Age</label>
+                        <select v-model="form.from_age" class="w-full p-2 border rounded bg-red-100">
+                            <option disabled value="">Select</option>
+                            <option v-for="age in ages" :key="age" :value="age">{{ age }}</option>
                         </select>
-                        <input type="number" v-model="ageTo" class="p-2 rounded border border-red-300 bg-red-200 "
-                            placeholder="to" />
+                        <span v-if="form.errors.from_age" class="text-red-600">{{ form.errors.from_age }}</span>
                     </div>
-
-                    <!-- Marital Status & Religion -->
-                    <div class="mb-6 grid grid-cols-2 gap-4 max-w-lg">
-                        <div>
-                            <label class="block font-semibold mb-1">Marital Status (Optional)</label>
-                            <select v-model="maritalStatus" class="w-full p-2 rounded border border-red-300 bg-red-200 ">
-                                <option disabled value="">Select Marital Status</option>
-                                <option>Single</option>
-                                <option>Divorced</option>
-                                <option>Widowed</option>
-                                <option>Separated</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block font-semibold mb-1">Religion</label>
-                            <input type="text" v-model="religion"
-                                class="w-full p-2 rounded border bg-red-200  border-red-300" placeholder="Religion" />
-                        </div>
-                    </div>
-
-                    <!-- Location & Education Level -->
-                    <div class="mb-6 grid grid-cols-2 gap-4 max-w-lg">
-                        <div>
-                            <label class="block font-semibold mb-1">Location (optional)</label>
-                            <input type="text" v-model="location"
-                                class="w-full p-2 rounded border bg-red-200  border-red-300" placeholder="Location" />
-                        </div>
-                        <div>
-                            <label class="block font-semibold mb-1">Educational Level (optional)</label>
-                            <input type="text" v-model="education"
-                                class="w-full p-2 rounded border bg-red-200  border-red-300"
-                                placeholder="Educational Level" />
-                        </div>
-                    </div>
-
-                    <!-- Partners Height -->
-                    <div class="mb-6 grid grid-cols-2 gap-4 max-w-lg">
-                        <label class="block col-span-2 font-semibold">Partners Height (optional)</label>
-                        <select v-model="heightFrom" class="p-2 rounded border bg-red-200  border-red-300">
-                            <option disabled value="">Please Select</option>
-                            <option>4'0"</option>
-                            <option>4'1"</option>
-                            <option>4'2"</option>
-                            <!-- add more heights as needed -->
+                    <div>
+                        <label class="font-semibold">To Age</label>
+                        <select v-model="form.to_age" class="w-full p-2 border rounded bg-red-100">
+                            <option disabled value="">Select</option>
+                            <option v-for="age in ages" :key="'to-' + age" :value="age">{{ age }}</option>
                         </select>
-                        <select v-model="heightTo" class="p-2 rounded border bg-red-200  border-red-300">
-                            <option disabled value="">Please Select</option>
-                            <option>5'0"</option>
-                            <option>5'1"</option>
-                            <option>5'2"</option>
-                            <!-- add more heights as needed -->
-                        </select>
-                    </div>
-
-                    <!-- Save Button -->
-                    <div class="text-right">
-                        <button
-                            class="text-white border-[#ddd] bg-gradient-to-r from-[#f50536bf] to-[#260000b8] px-4 py-2 rounded-full">
-                            Save
-                        </button>
+                        <span v-if="form.errors.to_age" class="text-red-600">{{ form.errors.to_age }}</span>
                     </div>
                 </div>
-            </section>
 
+                <!-- Marital Status -->
+                <div>
+                    <label class="font-semibold">Marital Status</label>
+                    <select v-model="form.marital_status" class="w-full p-2 border rounded bg-red-100">
+                        <option disabled value="">Select</option>
+                        <option>Single</option>
+                        <option>Divorced</option>
+                        <option>Widowed</option>
+                        <option>Awaiting Divorce</option>
+                    </select>
+                    <span v-if="form.errors.marital_status" class="text-red-600">{{ form.errors.marital_status }}</span>
+                </div>
+
+                <!-- Religion -->
+                <div>
+                    <label class="font-semibold">Religion</label>
+                    <select v-model="form.religion" class="w-full p-2 border rounded bg-red-100">
+                        <option disabled value="">Select</option>
+                        <option>Islam</option>
+                        <option>Hinduism</option>
+                        <option>Christianity</option>
+                        <option>Buddhism</option>
+                        <option>Judaism</option>
+                        <option>Other</option>
+                    </select>
+                    <span v-if="form.errors.religion" class="text-red-600">{{ form.errors.religion }}</span>
+                </div>
+
+                <!-- Location -->
+                <div>
+                    <label class="font-semibold">Location</label>
+                    <select v-model="form.location" class="w-full p-2 border rounded bg-red-100">
+                        <option disabled value="">Select</option>
+                        <option>Dhaka</option>
+                        <option>Chittagong</option>
+                        <option>Khulna</option>
+                        <option>Rajshahi</option>
+                        <option>Sylhet</option>
+                        <option>Barisal</option>
+                        <option>Rangpur</option>
+                        <option>Mymensingh</option>
+                        <option>Other</option>
+                    </select>
+                    <span v-if="form.errors.location" class="text-red-600">{{ form.errors.location }}</span>
+                </div>
+
+                <!-- Education -->
+                <div>
+                    <label class="font-semibold">Education</label>
+                    <select v-model="form.education" class="w-full p-2 border rounded bg-red-100">
+                        <option disabled value="">Select</option>
+                        <option>High School</option>
+                        <option>Diploma</option>
+                        <option>Bachelor's</option>
+                        <option>Master's</option>
+                        <option>PhD</option>
+                        <option>Other</option>
+                    </select>
+                    <span v-if="form.errors.education" class="text-red-600">{{ form.errors.education }}</span>
+                </div>
+
+                <!-- Height -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="font-semibold">Height From</label>
+                        <select v-model="form.height_from" class="w-full p-2 border rounded bg-red-100">
+                            <option disabled value="">Select</option>
+                            <option v-for="h in heights" :key="'from-' + h" :value="h">{{ h }}</option>
+                        </select>
+                        <span v-if="form.errors.height_from" class="text-red-600">{{ form.errors.height_from }}</span>
+                    </div>
+                    <div>
+                        <label class="font-semibold">Height To</label>
+                        <select v-model="form.height_to" class="w-full p-2 border rounded bg-red-100">
+                            <option disabled value="">Select</option>
+                            <option v-for="h in heights" :key="'to-' + h" :value="h">{{ h }}</option>
+                        </select>
+                        <span v-if="form.errors.height_to" class="text-red-600">{{ form.errors.height_to }}</span>
+                    </div>
+                </div>
+
+                <!-- Submit -->
+                <div class="text-right">
+                    <button type="submit"
+                        class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition">Save</button>
+                </div>
+
+            </form>
         </div>
-
     </MainWrapper>
 </template>

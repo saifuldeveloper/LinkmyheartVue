@@ -39,7 +39,7 @@ Route::get('/dashboard', function () {
 Route::middleware('auth')->group(function () {
     Route::group(['prefix' => 'user'], function () {
         Route::get('/partner-preference', [UserProfileController::class, 'partnerPreference'])->name('partner.preference');
-        Route::post('/partner-preference/update', [UserProfileController::class, 'partnerPreferenceUpdate'])->name('partner.preference.update');
+        Route::post('/partner-preference/update', [MatchesController::class, 'partnerPreferenceUpdate'])->name('partner.preference.update');
         Route::get('/profile', [UserProfileController::class, 'edit'])->name('profile.edit');
 
         Route::get('/verify/account', [UserProfileController::class, 'verifyAccount'])->name('verify.account');
@@ -47,8 +47,8 @@ Route::middleware('auth')->group(function () {
 
 
 
-                Route::get('/matches', [MatchesController::class, 'matches'])->name(name: 'user.matches');
-                Route::get('/matches/profile/view', [MatchesController::class, 'profileView'])->name( 'matches.profile.view');
+        Route::get('/matches', [MatchesController::class, 'matches'])->name(name: 'user.matches');
+        Route::get('/matches/profile/view', [MatchesController::class, 'profileView'])->name('matches.profile.view');
     });
 
 

@@ -25,7 +25,7 @@ class AuthController extends Controller
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->first()], 422);
         }
-        if (User::where('phone', $request->phone)->exists()) {
+        if (User::where('number', $request->phone)->exists()) {
             return response()->json(['error' => 'Phone number already registered. Please log in.'], 409);
         }
         $otp = rand(100000, 999999);
@@ -91,7 +91,7 @@ class AuthController extends Controller
 
         $user = new User();
         $user->name = $request->name;
-        $user->phone = $request->phone;
+        $user->number = $request->phone;
         $user->password = Hash::make($request->confirm_password);
         $user->unique_id = 'LMH' . $user->getNextId();
         $user->save();

@@ -21,6 +21,7 @@ const otp = reactive(['', '', '', '', '', '']) // 6-digit OTP
 const otpDigits = Array(6).fill(0)
 const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
+
 const OtpVerify = async () => {
   try {
     const res = await fetch('/register-otp', {
@@ -32,26 +33,23 @@ const OtpVerify = async () => {
       },
       body: JSON.stringify({
         name: form.name,
-        phone: form.phone,
         gender: form.gender,
+        phone: form.phone,
       }),
     });
 
     const data = await res.json();
 
-    if (res.ok) {
-      step.value = 2;
-
-
+    if (res.ok && data.success) {
+      step.value = 2; // move to OTP step
     } else {
-      alert(data.error || 'Failed to send OTP');
+      alert(data.message || 'Failed to send OTP');
     }
-  } catch (err) {
+  } catch (error) {
     alert('Error sending OTP');
-    console.error(err);
+    console.error(error);
   }
-}
-
+};
 
 
 
