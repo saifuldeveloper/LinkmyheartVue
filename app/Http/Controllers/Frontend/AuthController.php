@@ -44,12 +44,12 @@ class AuthController extends Controller
         );
         try {
             $message = "{$otp} is  your Linkmyheart verification code";
-            Http::post(env('SMS_PROVIDER_URL'), [
-                'api_key' => env('SMS_API_KEY'),
-                'msg' => $message,
-                'to' => $request->phone,
-                'sender_id' => env('SMS_SENDER_ID'),
-            ]);
+            // Http::post(env('SMS_PROVIDER_URL'), [
+            //     'api_key' => env('SMS_API_KEY'),
+            //     'msg' => $message,
+            //     'to' => $request->phone,
+            //     'sender_id' => env('SMS_SENDER_ID'),
+            // ]);
             return response()->json(['success' => true, 'code' => $otp, 'message' => 'OTP has been sent to your phone.']);
         } catch (Exception $e) {
             return response()->json(['success' => false, 'message' => 'An error occurred while sending the OTP. Please try again later.', 'error' => $e->getMessage()]);

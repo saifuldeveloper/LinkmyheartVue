@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+
 class MatchesController extends Controller
 {
 
@@ -26,7 +27,6 @@ class MatchesController extends Controller
 
     public function partnerPreferenceUpdate(Request $request)
     {
-        // ✅ Inertia-compatible validation
         $validated = $request->validate([
             'looking_for' => 'required|in:Bride,Groom',
             'from_age' => 'required|integer|min:18',
@@ -40,61 +40,49 @@ class MatchesController extends Controller
         ]);
 
         $user = Auth::user();
+        MatchProfile::updateOrCreate(
+            ['user_id' => $user->id],
+            $validated
+        );
 
-        // ✅ Create or update match profile
-        $match = $user->match ?? new MatchProfile(['user_id' => $user->id]);
-        $match->fill($validated)->save();
-
-
-
-        $profile = Auth::user()->profile;
-
-        if ($request->looking_for == 'Bride') {
-            $profile->i_am = 'Groom';
-        } else {
-            $profile->i_am = 'Bride';
+        $profile = Profile::where('user_id', $user->id)->first();
+        if ($profile) {
+            $profile->i_am = $request->looking_for === 'Bride' ? 'Groom' : 'Bride';
+            $profile->save();
         }
 
-        $profile->save();
+        // Proceed with matching only if profile exists
+        if ($profile) {
+            $matchingProfiles = MatchProfile::with('profile')
+                ->where('looking_for', $profile->i_am)
+                ->where('religion', $profile->religion)
+                ->where('user_id', '!=', $user->id)
+                ->when($profile->location, function ($query) use ($profile) {
+                    $query->where('location', $profile->location);
+                })
+                ->when(!is_null($profile->age), function ($query) use ($profile) {
+                    $query->where('from_age', '<=', $profile->age)
+                        ->where('to_age', '>=', $profile->age);
+                })
+                ->whereHas('profile', function ($query) use ($profile) {
+                    if ($profile->gender) {
+                        $query->where('gender', '!=', $profile->gender);
+                    }
+                })
+                ->get();
 
-        $matchProfileData = MatchProfile::where('user_id', Auth::user()->id)->first();
-
-
-
-        $age = Auth::user()->profile->age;
-
-
-
-        $matchingProfiles = MatchProfile::with('profile')
-            ->where('looking_for', Auth::user()->profile->i_am)
-            ->orwhere('religion', Auth::user()->profile->religion)
-            ->whereHas('profile', function ($query) {
-                $query->where('gender', '!=', Auth::user()->profile->gender);
-            });
-
-        if ($matchingProfiles) {
-            $matchingProfiles->where('location', $matchingProfiles->location)
-                ->where('user_id', '!=', Auth::user()->id)
-                ->where('from_age', '<=', $matchingProfiles->from_age)
-                ->where('to_age', '>=', $matchingProfiles->to_age);
-        }
-        $new_user = Profile::where('user_id', Auth::id())->first();
-        $matchingProfiles = $matchingProfiles->get();
-
-
-        foreach ($matchingProfiles as $match) {
-            $matchedUser = Profile::where('user_id', $match->user_id)->first();
-            if ($matchedUser) {
-                try {
-                    Mail::to($matchedUser->email)->send(new NewMatchFoundMail($matchedUser, $new_user));
-                } catch (\Exception $e) {
-                    \Log::error('Email sending failed: ' . $e->getMessage());
+            foreach ($matchingProfiles as $match) {
+                $matchedUser = Profile::where('user_id', $match->user_id)->first();
+                if ($matchedUser) {
+                    try {
+                        Mail::to($matchedUser->email)->send(new NewMatchFoundMail($matchedUser, $profile));
+                    } catch (\Exception $e) {
+                        \Log::error('Email sending failed: ' . $e->getMessage());
+                    }
                 }
             }
         }
 
-
-        // ✅ Redirect (Inertia expects this)
         return redirect()->back()->with('success', 'Partner preference saved.');
     }
 

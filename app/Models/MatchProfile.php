@@ -21,4 +21,9 @@ class MatchProfile extends Model
         'height_to',
         // add any other fillable fields here
     ];
+
+      public function profile()
+    {
+        return $this->belongsTo(Profile::class, 'user_id', 'user_id');
+    }
 }

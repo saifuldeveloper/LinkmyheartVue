@@ -54,7 +54,7 @@ class PagesController extends Controller
             'phone' => ['required', 'string'],
             'password' => ['required', 'string'],
         ]);
-        if (Auth::attempt(['phone' => $credentials['phone'], 'password' => $credentials['password']])) {
+        if (Auth::attempt(['number' => $credentials['phone'], 'password' => $credentials['password']])) {
             $request->session()->regenerate();
             return redirect()->intended(route('dashboard'));
         }
