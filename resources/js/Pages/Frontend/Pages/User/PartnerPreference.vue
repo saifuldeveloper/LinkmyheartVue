@@ -1,26 +1,56 @@
 <script setup>
 import MainWrapper from './MainWrapper.vue'
 import { useForm, usePage } from '@inertiajs/vue3'
-import { computed } from 'vue'
+import { ElNotification } from 'element-plus'
+import { computed, onMounted } from 'vue'
+import { Inertia } from '@inertiajs/inertia'
+const page = usePage()
+
+const preference = page.props.preference || {}
 
 const form = useForm({
-    looking_for: '',
-    from_age: '',
-    to_age: '',
-    marital_status: '',
-    religion: '',
-    location: '',
-    education: '',
-    height_from: '',
-    height_to: '',
+    looking_for: preference.looking_for || '',
+    from_age: preference.from_age || '',
+    to_age: preference.to_age || '',
+    marital_status: preference.marital_status || '',
+    religion: preference.religion || '',
+    location: preference.location || '',
+    education: preference.education || '',
+    height_from: preference.height_from || '',
+    height_to: preference.height_to || '',
 })
 
-const page = usePage()
+
 
 const flashSuccess = computed(() => page.props.flash?.success)
 
+onMounted(() => {
+    if (flashSuccess.value) {
+        ElNotification({
+            title: 'Success',
+            message: flashSuccess.value,
+            type: 'success',
+            duration: 6000,
+        })
+    }
+})
+
+
 const submit = () => {
-    form.post('/user/partner-preference/update')
+    form.post('/user/partner-preference/update', {
+        onSuccess: () => {
+            ElNotification({
+                title: 'Success',
+                message: 'Preferences updated successfully!',
+                type: 'success',
+                duration: 3000,
+            });
+            setTimeout(() => {
+                  Inertia.visit('/user/profile')
+            }, 5000)
+
+        },
+    })
 }
 
 const ages = Array.from({ length: 80 }, (_, i) => i + 18)

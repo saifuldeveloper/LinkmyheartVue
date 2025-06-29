@@ -11,6 +11,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('profiles', function (Blueprint $table) {
+            $table->id();
             $table->bigInteger('user_id');
             $table->string('i_am')->nullable();
             $table->string('account_for')->nullable();
@@ -40,7 +41,7 @@ return new class extends Migration {
             $table->string('education_level')->nullable();
             $table->string('profession')->nullable();
             $table->string('institute_name')->nullable();
-            $table->bigInteger('education_year')->nullable();
+            $table->string('education_year')->nullable();
             $table->string('designation')->nullable();
             $table->string('monthly_income')->nullable();
             $table->string('living_with_family')->nullable();
@@ -48,6 +49,7 @@ return new class extends Migration {
             $table->string('family_status')->nullable();
             $table->string('complexion')->nullable();
             $table->string('father_status')->nullable();
+            $table->string('natinality')->nullable();
             $table->tinyInteger('status')->default(1);
             $table->longText('additional_document')->nullable();
             $table->tinyInteger('verified')->default(0);
