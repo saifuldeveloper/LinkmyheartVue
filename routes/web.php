@@ -42,6 +42,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/partner-preference/update', [MatchesController::class, 'partnerPreferenceUpdate'])->name('partner.preference.update');
         Route::get('/profile', [UserProfileController::class, 'edit'])->name('profile.edit');
         Route::post('/upload-profile-image', [UserProfileController::class, 'uploadImage'])->name('profile.upload');
+        Route::post('/upload-galery-images', [UserProfileController::class, 'uploadGalleryImages'])->name('profile.storeImageGallery');
+        Route::post('/galery-images-remove', [UserProfileController::class, 'removeGalleryImages'])->name('profile.removeImageGallery');
+
+
         Route::post('/profile/update/one', [UserProfileController::class, 'profileUpdateOne'])->name('profile.update.one');
         Route::post('/profile/update/description', [UserProfileController::class, 'UpdateDscription'])->name('profile.update.description');
         Route::post('/profile/update/personal-info', [UserProfileController::class, 'updatePersonalInfo'])->name('profile.update.personal.info');

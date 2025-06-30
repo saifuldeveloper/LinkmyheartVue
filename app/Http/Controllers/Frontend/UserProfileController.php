@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Models\ImageGallery;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
-use App\Models\UserImage;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 class UserProfileController extends Controller
@@ -33,12 +33,27 @@ class UserProfileController extends Controller
     {
         $user = auth()->user();
         $profile = $user->profile;
-        return Inertia::render('Frontend/Pages/User/Profile',
+
+        $profileImage = $profile->image
+            ? asset('Frontend/UserImages/profile/' . $profile->image)
+            : asset('user_images/default.png');
+        $galleryImages = ImageGallery::where('user_id', $user->id)
+            ->get()
+            ->map(function ($image) {
+                return [
+                    'id' => $image->id,
+                    'url' => asset('Frontend/UserImages/gallery/' . $image->image),
+                ];
+            });
+        return Inertia::render(
+            'Frontend/Pages/User/Profile',
             [
                 'profile' => $profile,
+                'profileImage' => $profileImage,
+                'galleryImages' => $galleryImages,
                 'user' => $user,
             ]
-            );
+        );
     }
 
     public function verifyAccount()
@@ -59,29 +74,95 @@ class UserProfileController extends Controller
     public function uploadImage(Request $request)
     {
         $request->validate([
-            'image' => 'required|image|max:2048', // max 2MB
+            'image' => 'required|image|max:2048',
         ]);
         $user = auth()->user();
         $file = $request->file('image');
         $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-        $oldImage = UserImage::where('user_id', $user->id)->first();
-        if ($oldImage) {
-            $oldFilePath = public_path('user_images/' . $oldImage->image);
+        $profile = $user->profile;
+        if ($profile->image) {
+            $oldFilePath = public_path('Frontend/UserImages/profile/' . $profile->image);
             if (File::exists($oldFilePath)) {
                 File::delete($oldFilePath);
             }
-            $oldImage->delete();
         }
-        $file->move(public_path('user_images'), $filename);
-        UserImage::create([
-            'user_id' => $user->id,
-            'image' => $filename,
-        ]);
+        $file->move(public_path('Frontend/UserImages/profile/'), $filename);
+        $profile->image = $filename;
+        $profile->save();
+
         return back()->with('success', 'Profile image updated.');
     }
 
+    public function uploadGalleryImages(Request $request)
+    {
+
+        $request->validate([
+            'images' => 'required|array',
+            'images.*' => 'image',
+        ]);
+
+        $user = auth()->user();
+        $uploadedImages = [];
+
+        foreach ($request->file('images', []) as $file) {
+            $filename = now()->format('YmdHis') . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+
+            $file->move(public_path('Frontend/UserImages/gallery/'), $filename);
+
+            $image = ImageGallery::create([
+                'user_id' => $user->id,
+                'image' => $filename,
+            ]);
+
+            $uploadedImages[] = [
+                'id' => $image->id,
+                'url' => asset('Frontend/UserImages/gallery/' . $filename),
+                'isNew' => false,
+            ];
+        }
+
+        return response()->json([
+            'success' => true,
+            'uploadedImages' => $uploadedImages,
+        ]);
+    }
+
+    public function removeGalleryImages(Request $request)
+    {
+
+        $request->validate([
+            'id' => 'required|exists:image_galleries,id',
+        ]);
+
+        $image = ImageGallery::findOrFail($request->id);
+        $filePath = public_path('Frontend/UserImages/gallery/' . $image->image);
+
+        if (File::exists($filePath)) {
+            File::delete($filePath);
+        }
+
+        $image->delete();
+
+        return response()->json(['success' => true, 'message' => 'Image removed successfully.']);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     public function profileUpdateOne(Request $request)
     {
+
         $data = $request->all();
         $rules = [
             'name' => 'nullable|string|max:50',
@@ -89,7 +170,7 @@ class UserProfileController extends Controller
             'year' => 'nullable',
             'day' => 'nullable',
             'month' => 'nullable',
-            'location' => 'nullable',
+            'city' => 'nullable',
             'religion' => 'nullable',
         ];
 
@@ -105,7 +186,7 @@ class UserProfileController extends Controller
         $profile->religion = $request->religion;
         $profile->date_of_birth = Carbon::create($request->year, $request->month, $request->day);
         $age = now()->year - $request->year;
-        $profile->location = $request->location;
+        $profile->location = $request->city;
         $profile->bio = $request->bio;
         $profile->age = $age;
         $profile->save();
