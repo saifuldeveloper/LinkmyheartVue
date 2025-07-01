@@ -10,15 +10,8 @@ const form = useForm({
 
 
 function submit() {
-  form.post('/login-user', {
-    onSuccess: () => {
-    },
-    onError: (errors) => {
-      console.log(errors);
-    },
-  })
+  form.post('/login-user')
 }
-
 
 </script>
 

@@ -82,35 +82,29 @@ class AuthController extends Controller
     public function registration(Request $request)
     {
 
-        $userData = UserOtpVerification::where('number', $request->phone)
-            ->first();
+
+        $userData = UserOtpVerification::where('number', $request->phone)->first();
 
         if (!$userData) {
             return response()->json(['error' => false, 'message' => 'Not verified.'], 400);
         }
-
+        $password = Hash::make($request->confirm_password);
         $user = new User();
         $user->name = $request->name;
         $user->number = $request->phone;
-        $user->password = Hash::make($request->confirm_password);
+        $user->password = $password;
         $user->unique_id = 'LMH' . $user->getNextId();
         $user->save();
-
         $profile = new Profile();
         $profile->user_id = $user->id;
         $profile->gender = $request->gender;
         $profile->save();
-
-
         Auth::login($user);
-
         $userData->delete();
-
-        
-            return response()->json([
-        'success' => true,
-        'redirect' => route('dashboard')
-    ]);
+        return response()->json([
+            'success' => true,
+            'redirect' => route('dashboard')
+        ]);
 
     }
 }

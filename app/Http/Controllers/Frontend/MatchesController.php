@@ -15,7 +15,27 @@ class MatchesController extends Controller
 
     public function matches()
     {
-        return Inertia::render('Frontend/Pages/User/Matches');
+
+        $user = Auth::user();
+        $profiles = Profile::where('user_id', '!=', $user->id)
+            ->where('status', 1)
+            ->with('user')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($profile) {
+                $profile->image_path = $profile->image
+                    ? asset('Frontend/UserImages/gallery/' . $profile->image)
+                    : asset('images/default-profile.png');
+                return $profile;
+            });
+
+
+        return Inertia::render(
+            'Frontend/Pages/User/Matches',
+            [
+                'profiles' => $profiles,
+            ]
+        );
     }
 
     public function profileView(Request $request)
@@ -71,16 +91,16 @@ class MatchesController extends Controller
                 })
                 ->get();
 
-            foreach ($matchingProfiles as $match) {
-                $matchedUser = Profile::where('user_id', $match->user_id)->first();
-                if ($matchedUser) {
-                    try {
-                        Mail::to($matchedUser->email)->send(new NewMatchFoundMail($matchedUser, $profile));
-                    } catch (\Exception $e) {
-                        \Log::error('Email sending failed: ' . $e->getMessage());
-                    }
-                }
-            }
+            // foreach ($matchingProfiles as $match) {
+            //     $matchedUser = Profile::where('user_id', $match->user_id)->first();
+            //     if ($matchedUser) {
+            //         try {
+            //             Mail::to($matchedUser->email)->send(new NewMatchFoundMail($matchedUser, $profile));
+            //         } catch (\Exception $e) {
+            //             \Log::error('Email sending failed: ' . $e->getMessage());
+            //         }
+            //     }
+            // }
         }
 
         return redirect()->back()->with('success', 'Partner preference saved.');

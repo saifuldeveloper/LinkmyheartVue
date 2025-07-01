@@ -167,26 +167,21 @@ class UserProfileController extends Controller
         $rules = [
             'name' => 'nullable|string|max:50',
             'bio' => 'nullable|string|max:150',
-            'year' => 'nullable',
-            'day' => 'nullable',
-            'month' => 'nullable',
-            'city' => 'nullable',
+            'date_of_birth' => 'nullable|date_format:Y-m-d',
+            'location' => 'nullable',
             'religion' => 'nullable',
         ];
-
         $validator = Validator::make($data, $rules);
-
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
         }
-
         $user = Auth::user();
         $profile = $user->profile;
         $profile->name = $request->name;
         $profile->religion = $request->religion;
-        $profile->date_of_birth = Carbon::create($request->year, $request->month, $request->day);
+        $profile->date_of_birth = $request->date_of_birth;
         $age = now()->year - $request->year;
-        $profile->location = $request->city;
+        $profile->location = $request->location;
         $profile->bio = $request->bio;
         $profile->age = $age;
         $profile->save();
@@ -200,18 +195,16 @@ class UserProfileController extends Controller
     public function UpdateDscription(Request $request)
     {
         $data = $request->all();
-
         $rules = [
-            'description' => 'nullable|string|max:255',
+            'desc' => 'nullable|string|max:255',
         ];
         $validator = Validator::make($data, $rules);
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
         }
-
         $user = Auth::user();
         $profile = $user->profile;
-        $profile->desc = $request->description;
+        $profile->desc = $request->desc;
         $profile->save();
         return back()->with('success', 'Profile updated.');
     }
@@ -219,7 +212,6 @@ class UserProfileController extends Controller
     public function updatePersonalInfo(Request $request)
     {
         $data = $request->all();
-
         $rules = [
             'height' => 'required',
             'weight' => 'required',

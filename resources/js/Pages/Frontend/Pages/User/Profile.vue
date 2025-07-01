@@ -1,19 +1,20 @@
 <script setup>
 import MainWrapper from './MainWrapper.vue';
 import { ref, computed, onMounted, reactive, watch } from 'vue'
-import { router, usePage, useForm } from '@inertiajs/vue3'
+import { router, usePage, useForm, Link } from '@inertiajs/vue3'
 import { ElNotification } from 'element-plus'
 import axios from 'axios'
 const preview = ref(null)
 
 const page = usePage()
 const flashSuccess = computed(() => page.props.flash?.success)
+const user = computed(() => page.props.user)
 const profile = computed(() => page.props.profile)
 const profileImage = computed(() => page.props.profileImage)
 const openModal = ref(false)
 
 
-const months = ['January', 'February', 'March', 'April', 'May', 'June','July', 'August', 'September', 'October', 'November', 'December']
+const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 const cities = ['Dhaka', 'Chittagong', 'Rajshahi', 'Khulna', 'Barisal', 'Sylhet', 'Rangpur', 'Mymensingh']
 const religions = ['Islam', 'Hinduism', 'Christianity', 'Buddhism', 'Other']
 
@@ -55,7 +56,7 @@ function handleFileChange(e) {
             onSuccess: () => {
                 ElNotification({
                     title: 'Success',
-                    message: 'Preferences updated successfully!',
+                    message: 'Profile Image updated!',
                     type: 'success',
                     duration: 3000,
                 });
@@ -200,8 +201,12 @@ const form = reactive({
     bio: '',
     birthday: '',
     location: '',
+    day: '',
+    month: '',
+    year: '',
+    date_of_birth: '',
     religion: '',
-    description: '',
+    desc: '',
     height: '',
     weight: '',
     bloodGroup: '',
@@ -224,11 +229,13 @@ const form = reactive({
     dringking: '',
 })
 
+
 // Immediately fill form from profile.value if available
 if (profile.value) {
     Object.keys(form).forEach(key => {
         form[key] = profile.value[key] ?? ''
     })
+
 }
 
 // submit profile form
@@ -237,7 +244,7 @@ function submitPorfileForm() {
         name: form.name,
         bio: form.bio,
         date_of_birth: `${form.year}-${form.month}-${form.day}`,
-        city: form.city,
+        location: form.location,
         religion: form.religion,
     }, {
         onSuccess: () => {
@@ -258,7 +265,7 @@ function submitPorfileForm() {
 // save description
 function saveDescription() {
     router.post('/user/profile/update/description', {
-        description: form.description
+        desc: form.desc
     }, {
         onSuccess: () => {
             ElNotification({
@@ -267,10 +274,15 @@ function saveDescription() {
                 type: 'success',
                 duration: 3000,
             });
-            AboutYourself.value = false
+
+            // Update the reactive profile value
+            profile.value.desc = form.description;
+
+            // Exit edit mode
+            AboutYourself.value = false;
         },
         preserveScroll: true,
-    })
+    });
 }
 // save personal information
 function savePersonalInformation() {
@@ -367,29 +379,29 @@ const personalInformation = ref(false);
                     <!-- User Info -->
                     <div class="flex-1 w-full pl-7">
                         <div class="flex flex-wrap items-center gap-2">
-                            <h2 class="text-xl sm:text-2xl font-bold capitalize">{{ profile.name }}</h2>
+                            <h2 class="text-xl sm:text-2xl font-bold capitalize">{{ form.name }}</h2>
                             <span class="cursor-pointer underline text-sm" @click="openModal = true">Change</span>
                             <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                                 <path
                                     d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828zM5 14h10v2H5v-2z" />
                             </svg>
                         </div>
-                        <p class="mt-1 text-sm">- {{ profile.bio }}</p>
+                        <p class="mt-1 text-sm">- {{ form.bio }}</p>
                         <hr class="my-4 border-white border-opacity-30">
 
                         <!-- Details -->
                         <div class="space-y-2 text-sm">
                             <div class="flex gap-2 flex-wrap">
                                 <span class="font-semibold">Birthday :</span>
-                                <span>{{ profile.date_of_birth }}</span>
+                                <span>{{ form.date_of_birth }}</span>
                             </div>
                             <div class="flex gap-2 flex-wrap">
                                 <span class="font-semibold">City :</span>
-                                <span>{{ profile.location }}</span>
+                                <span>{{ form.location }}</span>
                             </div>
                             <div class="flex gap-2 flex-wrap">
                                 <span class="font-semibold">Religion :</span>
-                                <span>{{ profile.religion }}</span>
+                                <span>{{ form.religion }}</span>
                             </div>
                         </div>
                     </div>
@@ -446,18 +458,19 @@ const personalInformation = ref(false);
                     <div class="flex justify-between items-center text-red-600 font-semibold">
                         <div>Contact Information</div>
                         <div class="flex items-center gap-3">
-                            <button class="flex items-center gap-1 hover:underline">
-                                Change <i class="fas fa-pen text-xs"></i>
-                            </button>
+                            <Link :href="route('user.profile.contact')" class="flex items-center gap-1 hover:underline">
+                            Change <i class="fas fa-pen text-xs"></i>
+                            </Link>
                             <button class="flex items-center gap-1 hover:underline">
                                 Hide <i class="fas fa-eye text-xs"></i>
                             </button>
                         </div>
                     </div>
                     <div class="mt-3 flex gap-4 flex-wrap">
-                        <span class="bg-white px-3 py-1 rounded-full shadow text-gray-800">Email:</span>
-                        <span class="bg-white px-3 py-1 rounded-full shadow text-gray-800">Phone: +880
-                            01518987898</span>
+                        <span class="bg-white px-3 py-1 rounded-full shadow text-gray-800">Email: {{ user.email
+                            }}</span>
+                        <span class="bg-white px-3 py-1 rounded-full shadow text-gray-800">Phone: {{ user.number
+                            }}</span>
                     </div>
                 </div>
 
@@ -475,12 +488,12 @@ const personalInformation = ref(false);
 
                     <!-- View Mode -->
                     <p v-if="!AboutYourself" class="mt-3 text-gray-700">
-                        {{ profile.desc || 'Write a short description about yourself!' }}
+                        {{ form.desc || 'Write a short description about yourself!' }}
                     </p>
 
                     <!-- Edit Mode -->
                     <div v-else class="mt-3">
-                        <textarea v-model="form.description" class="w-full p-2 rounded-md" rows="3"></textarea>
+                        <textarea v-model="form.desc" class="w-full p-2 rounded-md" rows="3"></textarea>
                         <button @click="saveDescription"
                             class="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
                             Save
@@ -766,14 +779,15 @@ const personalInformation = ref(false);
 
                 <div class="bg-gray-200 rounded-md p-4 flex flex-wrap items-center gap-2 my-5">
                     <div class="text-red-600 font-semibold mr-1">I'm looking for</div>
-                    <button class="text-red-600 underline flex items-center gap-1">
-                        Change
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-red-600" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M15.232 5.232l3.536 3.536M9 13l6.536-6.536a2 2 0 112.828 2.828L11.828 15.828a4 4 0 01-1.414.828l-4.243 1.414 1.414-4.243a4 4 0 01.828-1.414z" />
-                        </svg>
-                    </button>
+
+                    <Link :href="route('partner.preference')" class="text-red-600 underline flex items-center gap-1">
+                    Change
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-red-600" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15.232 5.232l3.536 3.536M9 13l6.536-6.536a2 2 0 112.828 2.828L11.828 15.828a4 4 0 01-1.414.828l-4.243 1.414 1.414-4.243a4 4 0 01.828-1.414z" />
+                    </svg>
+                    </Link>
 
                     <!-- Filters -->
                     <div class="bg-blue-100 text-black px-2 py-1 rounded-full">Bride</div>
@@ -853,9 +867,10 @@ const personalInformation = ref(false);
                             <!-- Location Select -->
                             <div>
                                 <label>Location</label>
-                                <select v-model="form.city" class="w-full rounded-md px-3 py-2 text-[#534d4d]">
+                                <select v-model="form.location" class="w-full rounded-md px-3 py-2 text-[#534d4d]">
                                     <option value="" disabled>Select City</option>
-                                    <option v-for="city in cities" :key="city" :value="city">{{ city }}</option>
+                                    <option v-for="location in cities" :key="location" :value="location">{{ location }}
+                                    </option>
                                 </select>
                             </div>
 

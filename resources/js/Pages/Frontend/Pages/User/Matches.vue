@@ -1,120 +1,126 @@
 <script setup>
 import MainWrapper from './MainWrapper.vue';
 import { ref, reactive, computed } from 'vue';
-import { router } from '@inertiajs/vue3'
-const allBiodata = ref([
-  {
-    id: 'ODM-1477',
-    name: 'Sabina',
-    age: 26,
-    height: '5\' 4\'\'',
-    description: 'Dhaka - Mirpur',
-    image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P1', 
-  },
-  {
-    id: 'ODF-16889',
-    name:  'Joyi',
-    age: 22,
-    height: '5\' 1\'\'',
-    description: 'Purb - Faridpur',
-    image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P2',
-  },
-  {
-    id: 'ODF-20999',
-    name: 'Tania',
-    age: 25,
-    height: '5\' 0\'\'',
-    description: 'Purb - Chittagong',
-    image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P3',
-  },
-  {
-    id: 'ODM-1127',
-    name: 'Hasan',
-    age: 28,
-    height: '5\' 4\'\'',
-    description: 'Dhaka - Mirpur',
-    image: '', // Example with no image
-  },
-  {
-    id: 'ODF-10359',
-    name: 'Shina',
-    age: 24,
-    height: '5\' 2\'\'',
-    description: 'Purb - Faridpur',
-    image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P5',
-  },
-  {
-    id: 'ODM-14221',
-    name: 'Rahim',
-    age: 26,
-    height: '5\' 0\'\'',
-    description: 'Dhaka - Mirpur',
-    image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P6',
-  },
-  {
-    id: 'ODF-21633',
-    name: 'Sathi',
-    age: 21,
-    height: '5\' 6\'\'',
-    description: 'Purb - Chittagong',
-    image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P7',
-  },
-  {
-    id: 'ODF-21656',
-    name: 'Nasreen',
-    age: 21,
-    height: '5\' 1\'\'',
-    description: 'Purb - Chittagong',
-    image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P8',
-  },
-  {
-    id: 'ODF-16442',
-    name: 'Purb - Ulla',
-    age: 20,
-    height: '5\' 5\'\'',
-    description: 'Purb - Chittagong',
-    image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P9',
-  },
-  {
-    id: 'ODM-1001',
-    name: 'মোঃ রনি',
-    age: 30,
-    height: '5\' 6\'\'',
-    description: 'barishal - sadar',
-    image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P10',
-  },
-  {
-    id: 'ODF-22001',
-    name: 'Sumona',
-    age: 23,
-    height: '5\' 3\'\'',
-    description: 'Dhaka - Banani',
-    image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P11',
-  },
-  {
-    id: 'ODM-15002',
-    name: 'Sabbir',
-    age: 27,
-    height: '5\' 7\'\'',
-    description: 'Dhaka - Uttara',
-    image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P12',
-  },
-]);
+import { router,usePage } from '@inertiajs/vue3'
+
+const page = usePage()
+const profiles = computed(() => page.props.profiles);
+
+
+
+// const allBiodata = ref([
+//   {
+//     id: 'ODM-1477',
+//     name: 'Sabina',
+//     age: 26,
+//     height: '5\' 4\'\'',
+//     description: 'Dhaka - Mirpur',
+//     image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P1', 
+//   },
+//   {
+//     id: 'ODF-16889',
+//     name:  'Joyi',
+//     age: 22,
+//     height: '5\' 1\'\'',
+//     description: 'Purb - Faridpur',
+//     image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P2',
+//   },
+//   {
+//     id: 'ODF-20999',
+//     name: 'Tania',
+//     age: 25,
+//     height: '5\' 0\'\'',
+//     description: 'Purb - Chittagong',
+//     image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P3',
+//   },
+//   {
+//     id: 'ODM-1127',
+//     name: 'Hasan',
+//     age: 28,
+//     height: '5\' 4\'\'',
+//     description: 'Dhaka - Mirpur',
+//     image: '', // Example with no image
+//   },
+//   {
+//     id: 'ODF-10359',
+//     name: 'Shina',
+//     age: 24,
+//     height: '5\' 2\'\'',
+//     description: 'Purb - Faridpur',
+//     image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P5',
+//   },
+//   {
+//     id: 'ODM-14221',
+//     name: 'Rahim',
+//     age: 26,
+//     height: '5\' 0\'\'',
+//     description: 'Dhaka - Mirpur',
+//     image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P6',
+//   },
+//   {
+//     id: 'ODF-21633',
+//     name: 'Sathi',
+//     age: 21,
+//     height: '5\' 6\'\'',
+//     description: 'Purb - Chittagong',
+//     image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P7',
+//   },
+//   {
+//     id: 'ODF-21656',
+//     name: 'Nasreen',
+//     age: 21,
+//     height: '5\' 1\'\'',
+//     description: 'Purb - Chittagong',
+//     image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P8',
+//   },
+//   {
+//     id: 'ODF-16442',
+//     name: 'Purb - Ulla',
+//     age: 20,
+//     height: '5\' 5\'\'',
+//     description: 'Purb - Chittagong',
+//     image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P9',
+//   },
+//   {
+//     id: 'ODM-1001',
+//     name: 'মোঃ রনি',
+//     age: 30,
+//     height: '5\' 6\'\'',
+//     description: 'barishal - sadar',
+//     image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P10',
+//   },
+//   {
+//     id: 'ODF-22001',
+//     name: 'Sumona',
+//     age: 23,
+//     height: '5\' 3\'\'',
+//     description: 'Dhaka - Banani',
+//     image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P11',
+//   },
+//   {
+//     id: 'ODM-15002',
+//     name: 'Sabbir',
+//     age: 27,
+//     height: '5\' 7\'\'',
+//     description: 'Dhaka - Uttara',
+//     image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P12',
+//   },
+// ]);
 
 // Pagination Logic
-const itemsPerPage = 9; // Display 9 items per page (3 rows of 3 cards)
+const itemsPerPage = 30; // Display 9 items per page (3 rows of 3 cards)
 const currentPage = ref(1); // Current active page
 
 // Computed property to calculate total number of pages
 const totalPages = computed(() => {
-  return Math.ceil(allBiodata.value.length / itemsPerPage);
+  return Math.ceil(profiles.value.length / itemsPerPage);
 });
 
 // Computed property to get biodata for the current page
 const paginatedBiodata = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;
   const end = start + itemsPerPage;
-  return allBiodata.value.slice(start, end);
+  return profiles.value.slice(start, end);
 });
 
 // Function to navigate to a specific page

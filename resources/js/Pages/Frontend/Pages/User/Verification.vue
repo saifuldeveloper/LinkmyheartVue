@@ -6,8 +6,8 @@ import { ref } from 'vue'
 </script>
 <template>
     <MainWrapper>
-       <section class="max-md mx-auto  md:w-1/1">
-                <div class=" mt-5 p-8 max-w-6xl mx-auto rounded-md  border border-red-300 font-sans">
+       <section class="max-md">
+                <div class="mt-5 p-8 max-w-6xl mx-auto rounded-md  border border-red-300 font-sans md:w-1/1">
                     <h2 class="text-2xl font-semibold mb-6">
                         Tell Us About Your Ideal Match Partner Preference ...
                     </h2>

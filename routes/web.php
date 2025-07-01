@@ -21,9 +21,11 @@ Route::get('/faq', [PagesController::class, 'faq'])->name('faq');
 Route::get('/support', [PagesController::class, 'support'])->name('support');
 Route::get('/filtering', [PagesController::class, 'filtering'])->name('filtering');
 
-Route::get('/login', [PagesController::class, 'loginSection'])->name('loginsection');
-Route::post('/login-user', [PagesController::class, 'loginUser'])->name('login.user');
-
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [PagesController::class, 'loginSection'])->name('loginsection');
+    Route::post('/login-user', [PagesController::class, 'loginUser'])->name('login.user');
+   
+});
 
 // user register otp send route
 Route::post('/register-otp', [AuthController::class, 'registerOtp'])->name('register.otp');
@@ -32,9 +34,15 @@ Route::post('/registration', [AuthController::class, 'registration'])->name('reg
 
 
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Frontend/Pages/User/Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::middleware('auth')->group(function () {
+    Route::post('/logout-user', [PagesController::class, 'logoutUser'])->name('logout.user');
+
+    Route::get('/dashboard', function () {
+        return Inertia::render('Frontend/Pages/User/Dashboard');
+    })->name('dashboard');
+});
+
+
 
 Route::middleware('auth')->group(function () {
     Route::group(['prefix' => 'user'], function () {

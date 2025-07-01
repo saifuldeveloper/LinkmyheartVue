@@ -8,7 +8,7 @@ use Inertia\Inertia;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
+
 class PagesController extends Controller
 {
     public function index(Request $request)
@@ -50,6 +50,7 @@ class PagesController extends Controller
     public function loginUser(Request $request)
     {
 
+ 
         $credentials = $request->validate([
             'phone' => ['required', 'string'],
             'password' => ['required', 'string'],

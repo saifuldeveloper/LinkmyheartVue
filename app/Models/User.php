@@ -17,6 +17,22 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
+    
+    public static function getNextId()
+    {
+        $last = self::where('id', 'not like', 'X-%')->orderByRaw('convert(conv(id, 16, 10), signed) desc')->first();
+        if (!$last) {
+            return '100';
+        }
+        $nextId = $last->id + 1;
+        return $nextId;
+    }
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'name',
         'email',
@@ -26,7 +42,7 @@ class User extends Authenticatable
     /**
      * The attributes that should be hidden for serialization.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $hidden = [
         'password',
@@ -34,39 +50,23 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
+     * The attributes that should be cast.
      *
-     * @return array<string, string>
+     * @var array<string, string>
      */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
-
-
-    public static function getNextId()
-    {
-        $last = self::where('id', 'not like', 'X-%')->orderByRaw('convert(conv(id, 16, 10), signed) desc')->first();
-        if (!$last) {
-            return '1';
-        }
-        $nextId = $last->id + 1;
-        return $nextId;
-    }
-
-
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
 
     public function profile()
     {
-        return $this->hasOne(Profile::class);
+    return $this->hasOne(Profile::class, 'user_id');
     }
 
     public function userInfo()
     {
-        return $this->hasOne(UserInfo::class, 'user_id');
+    return $this->hasOne(UserInfo::class, 'user_id');
     }
 
     public function plans()
@@ -84,13 +84,11 @@ class User extends Authenticatable
         return $this->hasOne(MatchProfile::class);
     }
 
-    public function partnerProfile()
-    {
+    public function partnerProfile(){
         return $this->hasOne(PartnerProfile::class, 'user_id');
     }
 
-    public function access()
-    {
+    public function access(){
         return $this->hasOne(AdminAccess::class, 'user_id');
     }
 
@@ -99,6 +97,6 @@ class User extends Authenticatable
     {
 
         return $this->hasMany(UserPlan::class)->where('end_date', '>', now())->exists();
-
+      
     }
 }

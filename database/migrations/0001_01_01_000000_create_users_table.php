@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->text('unique_id')->nullable();
-            $table->tinyInteger('role')->nullable();
+            $table->tinyInteger('role')->default(0);
             $table->string('role_name')->nullable();
             $table->string('name')->nullable();
             $table->string('email')->unique()->nullable();
@@ -32,7 +32,8 @@ return new class extends Migration
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
-            $table->string('email')->primary();
+            $table->string('email')->nullable()->index();
+            $table->string('number')->primary();
             $table->string('token');
             $table->timestamp('created_at')->nullable();
         });
