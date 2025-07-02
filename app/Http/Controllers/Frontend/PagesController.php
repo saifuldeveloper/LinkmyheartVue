@@ -47,22 +47,4 @@ class PagesController extends Controller
         return Inertia::render('Frontend/Pages/Login');
     }
 
-    public function loginUser(Request $request)
-    {
-
- 
-        $credentials = $request->validate([
-            'phone' => ['required', 'string'],
-            'password' => ['required', 'string'],
-        ]);
-        if (Auth::attempt(['number' => $credentials['phone'], 'password' => $credentials['password']])) {
-            $request->session()->regenerate();
-            return redirect()->intended(route('dashboard'));
-        }
-        return back()->withErrors([
-            'phone' => 'Phone or password is incorrect.',
-        ])->onlyInput('phone');
-
-
-    }
 }

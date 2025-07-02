@@ -212,7 +212,7 @@ const isHomePage = page.url === '/'
         </li>
       </ul>
 
-      <button v-if="user" @click="router.visit('/dashboard')"
+      <button v-if="user" @click="router.visit('/user/dashboard')"
         class="hidden lg:inline-block px-5 py-3 text-sm text-[#d91414de] bg-[#fbf7f791] border-2 border-[#c64b64] rounded-[12px] transition duration-200">
         Dashboard
       </button>

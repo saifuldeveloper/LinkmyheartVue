@@ -4,7 +4,7 @@ import Navbar from '../Layouts/Navbar.vue';
 import { useForm, router } from '@inertiajs/vue3'
 
 const form = useForm({
-  phone: '',
+  number: '',
   password: '',
 })
 
@@ -27,10 +27,10 @@ function submit() {
       <div class="w-full md:w-1/3 border border-red-100 shadow-red rounded-lg p-6 bg-white shadow-md text-center">
         <form class=" space-y-5" @submit.prevent="submit">
           <h1 class="text-4xl pt-10 font-bold text-red-600 py-10">Login</h1>
-          <!-- Phone Input -->
-          <input type="text" placeholder="Phone" v-model="form.phone"
+          <!-- Number Input -->
+          <input type="text" placeholder="Phone" v-model="form.number" id="number"
             class="w-full px-4 py-3 border border-red-400 rounded-md focus:outline-none focus:ring-2 focus:ring-red-300" />
-             <p v-if="form.errors.phone" class="text-red-500 text-sm">{{ form.errors.phone }}</p>
+             <p v-if="form.errors.number" class="text-red-500 text-sm">{{ form.errors.number }}</p>
           <!-- Password Input -->
           <input type="password" placeholder="Password" v-model="form.password"
             class="w-full px-4 py-3 border border-red-400 rounded-md focus:outline-none focus:ring-2 focus:ring-red-300" />

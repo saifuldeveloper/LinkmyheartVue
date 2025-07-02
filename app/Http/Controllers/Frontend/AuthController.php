@@ -3,15 +3,16 @@
 namespace App\Http\Controllers\Frontend;
 use App\Models\Profile;
 use App\Models\UserOtpVerification;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
 use Exception;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
+
+
+
 class AuthController extends Controller
 {
     public function registerOtp(Request $request)
@@ -81,14 +82,18 @@ class AuthController extends Controller
 
     public function registration(Request $request)
     {
-
-
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'phone' => 'required|string|unique:users,number',
+            'password_confirmation' => 'required|string|min:8',
+            'gender' => 'required|string'
+        ]);
         $userData = UserOtpVerification::where('number', $request->phone)->first();
 
         if (!$userData) {
             return response()->json(['error' => false, 'message' => 'Not verified.'], 400);
         }
-        $password = Hash::make($request->confirm_password);
+        $password = Hash::make($request->password_confirmation);
         $user = new User();
         $user->name = $request->name;
         $user->number = $request->phone;
@@ -106,5 +111,31 @@ class AuthController extends Controller
             'redirect' => route('dashboard')
         ]);
 
+    }
+
+
+    public function loginUser(Request $request)
+    {
+
+        $credentials = $request->validate([
+            'number' => ['required', 'string'],
+            'password' => ['required', 'string'],
+        ]);
+        if (Auth::attempt(['number' => $credentials['number'], 'password' => $credentials['password']])) {
+            $request->session()->regenerate();
+            return redirect()->intended(route('dashboard'));
+        }
+        return back()->withErrors([
+            'number' => 'Number or password is incorrect.',
+        ])->onlyInput('number');
+
+    }
+
+    public function logoutUser(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect()->route('home');
     }
 }

@@ -12,16 +12,22 @@ use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 class UserProfileController extends Controller
 {
-    //
 
-
+    public function dashboard()
+    {
+        return Inertia::render(
+            'Frontend/Pages/User/Dashboard',
+            [
+               
+            ]
+        );
+    }
     public function partnerPreference()
     {
         $user = auth()->user();
         $preference = $user->match;
         return Inertia::render(
-            'Frontend/Pages/User/PartnerPreference'
-            ,
+            'Frontend/Pages/User/PartnerPreference',
             [
                 'preference' => $preference,
                 'user' => $user,
@@ -66,11 +72,6 @@ class UserProfileController extends Controller
         return Inertia::render('Frontend/Pages/User/ProfileContact');
     }
 
-
-
-
-
-
     public function uploadImage(Request $request)
     {
         $request->validate([
@@ -103,12 +104,9 @@ class UserProfileController extends Controller
 
         $user = auth()->user();
         $uploadedImages = [];
-
         foreach ($request->file('images', []) as $file) {
             $filename = now()->format('YmdHis') . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-
             $file->move(public_path('Frontend/UserImages/gallery/'), $filename);
-
             $image = ImageGallery::create([
                 'user_id' => $user->id,
                 'image' => $filename,
@@ -129,34 +127,17 @@ class UserProfileController extends Controller
 
     public function removeGalleryImages(Request $request)
     {
-
         $request->validate([
             'id' => 'required|exists:image_galleries,id',
         ]);
-
         $image = ImageGallery::findOrFail($request->id);
         $filePath = public_path('Frontend/UserImages/gallery/' . $image->image);
-
         if (File::exists($filePath)) {
             File::delete($filePath);
         }
-
         $image->delete();
-
         return response()->json(['success' => true, 'message' => 'Image removed successfully.']);
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
