@@ -31,11 +31,11 @@ Route::post('/register-otp-verify', [AuthController::class, 'registerOtpVerify']
 Route::post('/registration', [AuthController::class, 'registration'])->name('registration');
 Route::middleware('auth')->group(function () {
     Route::post('/logout-user', [AuthController::class, 'logoutUser'])->name('logout.user');
-    
-        // return Inertia::render('Frontend/Pages/User/Dashboard');
-        Route::get('/user/dashboard',[UserProfileController::class, 'dashboard'])->name('user.dashboard');
 
-  
+    // return Inertia::render('Frontend/Pages/User/Dashboard');
+    Route::get('/user/dashboard', [UserProfileController::class, 'dashboard'])->name('user.dashboard');
+
+
 });
 
 Route::middleware('auth')->group(function () {
@@ -56,6 +56,16 @@ Route::middleware('auth')->group(function () {
         Route::post('/partner-preference/update', [MatchesController::class, 'partnerPreferenceUpdate'])->name('partner.preference.update');
         Route::get('/matches', [MatchesController::class, 'matches'])->name(name: 'user.matches');
         Route::get('/matches/profile/view', [MatchesController::class, 'profileView'])->name('matches.profile.view');
+
+
+        Route::get('/user/messages', [UserProfileController::class, 'userMessages'])->name('user.messages');
+
+        Route::middleware(['auth'])->group(function () {
+            Route::get('/chatify', [\Chatify\Http\Controllers\MessagesController::class, 'index'])->name('chatify');
+        });
+
+
+
     });
 
 

@@ -31,9 +31,9 @@ const isRouteActive = (name) => {
                 :class="['flex items-center gap-3 p-2 rounded hover:bg-red-200', isRouteActive('user.matches') ? 'bg-red-200 font-bold text-red-600' : '']">
             <i class="far fa-edit w-5"></i><span>Matches</span>
             </Link>
-            <a href="#" class="flex items-center gap-2 p-2 rounded hover:bg-red-200">
-                <i class="far fa-heart w-5"></i> <span>Messages</span>
-            </a>
+            <Link :href="route('user.messages')" class="flex items-center gap-2 p-2 rounded hover:bg-red-200">
+            <i class="far fa-heart w-5"></i> <span>Messages</span>
+            </Link>
             <a href="#" class="flex items-center gap-2 p-2 rounded hover:bg-red-200">
                 <i class="fas fa-envelope-open-text w-5"></i> <span>Notification</span>
             </a>

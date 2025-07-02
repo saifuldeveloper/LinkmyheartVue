@@ -248,4 +248,10 @@ class UserProfileController extends Controller
 
     }
 
+    public function userMessages(){
+      
+        return Inertia::render('Frontend/Pages/User/Messages');
+
+    }
+
 }
