@@ -108,7 +108,7 @@ class AuthController extends Controller
         $userData->delete();
         return response()->json([
             'success' => true,
-            'redirect' => route('dashboard')
+            'redirect' => route('user.dashboard')
         ]);
 
     }
@@ -123,7 +123,7 @@ class AuthController extends Controller
         ]);
         if (Auth::attempt(['number' => $credentials['number'], 'password' => $credentials['password']])) {
             $request->session()->regenerate();
-            return redirect()->intended(route('dashboard'));
+            return redirect()->intended(route('user.dashboard'));
         }
         return back()->withErrors([
             'number' => 'Number or password is incorrect.',
