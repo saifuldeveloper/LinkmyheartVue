@@ -18,7 +18,7 @@ class UserProfileController extends Controller
         return Inertia::render(
             'Frontend/Pages/User/Dashboard',
             [
-               
+
             ]
         );
     }
@@ -39,9 +39,8 @@ class UserProfileController extends Controller
     {
         $user = auth()->user();
         $profile = $user->profile;
-
         $profileImage = $profile->image
-            ? asset('Frontend/UserImages/profile/' . $profile->image)
+            ? asset( $profile->image)
             : asset('user_images/default.png');
         $galleryImages = ImageGallery::where('user_id', $user->id)
             ->get()
@@ -74,21 +73,26 @@ class UserProfileController extends Controller
 
     public function uploadImage(Request $request)
     {
+
         $request->validate([
             'image' => 'required|image|max:2048',
         ]);
         $user = auth()->user();
         $file = $request->file('image');
         $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+        $uploadPath = 'frontend-assets/imgs/profiles/';
+        $fullPath = public_path($uploadPath);
+
+        // Delete old image if exists
         $profile = $user->profile;
         if ($profile->image) {
-            $oldFilePath = public_path('Frontend/UserImages/profile/' . $profile->image);
-            if (File::exists($oldFilePath)) {
-                File::delete($oldFilePath);
+            $oldPath = public_path($profile->image); 
+            if (File::exists($oldPath)) {
+                File::delete($oldPath);
             }
         }
-        $file->move(public_path('Frontend/UserImages/profile/'), $filename);
-        $profile->image = $filename;
+        $file->move($fullPath, $filename);
+        $profile->image = $uploadPath . $filename;
         $profile->save();
 
         return back()->with('success', 'Profile image updated.');
@@ -248,8 +252,9 @@ class UserProfileController extends Controller
 
     }
 
-    public function userMessages(){
-      
+    public function userMessages()
+    {
+
         return Inertia::render('Frontend/Pages/User/Messages');
 
     }

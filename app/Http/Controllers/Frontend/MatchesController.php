@@ -24,7 +24,7 @@ class MatchesController extends Controller
             ->get()
             ->map(function ($profile) {
                 $profile->image_path = $profile->image
-                    ? asset('Frontend/UserImages/gallery/' . $profile->image)
+                    ? asset( $profile->image)
                     : asset('images/default-profile.png');
                 return $profile;
             });
@@ -38,9 +38,21 @@ class MatchesController extends Controller
         );
     }
 
-    public function profileView(Request $request)
+    public function profileView(Request $request, $id)
     {
-        return Inertia::render('Frontend/Pages/User/MatchesProfile');
+        $authProfile = Profile::with('user.match')->where('user_id', Auth::id())->firstOrFail();
+        $viewProfile = Profile::with('user.match')->where('id', $id)->firstOrFail();
+        $authProfile->image_url = $authProfile->image
+            ? asset( $authProfile->image)
+            : asset('images/profiles/default.png');  // fallback image
+        $viewProfile->image_url = $viewProfile->image
+            ? asset( $viewProfile->image)
+            : asset('images/profiles/default.png');
+
+        return Inertia::render('Frontend/Pages/User/MatchesProfile', [
+            'authProfile' => $authProfile,
+            'viewProfile' => $viewProfile,
+        ]);
     }
 
 

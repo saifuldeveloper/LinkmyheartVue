@@ -6,107 +6,7 @@ import { router,usePage } from '@inertiajs/vue3'
 const page = usePage()
 const profiles = computed(() => page.props.profiles);
 
-
-
-// const allBiodata = ref([
-//   {
-//     id: 'ODM-1477',
-//     name: 'Sabina',
-//     age: 26,
-//     height: '5\' 4\'\'',
-//     description: 'Dhaka - Mirpur',
-//     image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P1', 
-//   },
-//   {
-//     id: 'ODF-16889',
-//     name:  'Joyi',
-//     age: 22,
-//     height: '5\' 1\'\'',
-//     description: 'Purb - Faridpur',
-//     image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P2',
-//   },
-//   {
-//     id: 'ODF-20999',
-//     name: 'Tania',
-//     age: 25,
-//     height: '5\' 0\'\'',
-//     description: 'Purb - Chittagong',
-//     image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P3',
-//   },
-//   {
-//     id: 'ODM-1127',
-//     name: 'Hasan',
-//     age: 28,
-//     height: '5\' 4\'\'',
-//     description: 'Dhaka - Mirpur',
-//     image: '', // Example with no image
-//   },
-//   {
-//     id: 'ODF-10359',
-//     name: 'Shina',
-//     age: 24,
-//     height: '5\' 2\'\'',
-//     description: 'Purb - Faridpur',
-//     image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P5',
-//   },
-//   {
-//     id: 'ODM-14221',
-//     name: 'Rahim',
-//     age: 26,
-//     height: '5\' 0\'\'',
-//     description: 'Dhaka - Mirpur',
-//     image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P6',
-//   },
-//   {
-//     id: 'ODF-21633',
-//     name: 'Sathi',
-//     age: 21,
-//     height: '5\' 6\'\'',
-//     description: 'Purb - Chittagong',
-//     image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P7',
-//   },
-//   {
-//     id: 'ODF-21656',
-//     name: 'Nasreen',
-//     age: 21,
-//     height: '5\' 1\'\'',
-//     description: 'Purb - Chittagong',
-//     image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P8',
-//   },
-//   {
-//     id: 'ODF-16442',
-//     name: 'Purb - Ulla',
-//     age: 20,
-//     height: '5\' 5\'\'',
-//     description: 'Purb - Chittagong',
-//     image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P9',
-//   },
-//   {
-//     id: 'ODM-1001',
-//     name: 'মোঃ রনি',
-//     age: 30,
-//     height: '5\' 6\'\'',
-//     description: 'barishal - sadar',
-//     image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P10',
-//   },
-//   {
-//     id: 'ODF-22001',
-//     name: 'Sumona',
-//     age: 23,
-//     height: '5\' 3\'\'',
-//     description: 'Dhaka - Banani',
-//     image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P11',
-//   },
-//   {
-//     id: 'ODM-15002',
-//     name: 'Sabbir',
-//     age: 27,
-//     height: '5\' 7\'\'',
-//     description: 'Dhaka - Uttara',
-//     image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=P12',
-//   },
-// ]);
-
+console.log(profiles.value);
 // Pagination Logic
 const itemsPerPage = 30; // Display 9 items per page (3 rows of 3 cards)
 const currentPage = ref(1); // Current active page
@@ -172,8 +72,8 @@ const prevPage = () => {
               </svg>
             </button>
           </div>
-          <div class="w-24 h-24 rounded-full bg-red-100 mb-4 overflow-hidden flex items-center justify-center">
-            <img :src="biodata.image" alt="" class="w-full  object-cover" v-if="biodata.image">
+          <div class="w-28 h-28 rounded-full bg-red-100 mb-4 overflow-hidden flex items-center justify-center">
+            <img :src="biodata.image_path" alt="" class="w-full  object-cover" v-if="biodata.image_path">
             <svg v-else class="w-16 h-16 text-gray-500" fill="currentColor" viewBox="0 0 20 20"
               xmlns="http://www.w3.org/2000/svg">
               <path fill-rule="evenodd"
@@ -185,7 +85,7 @@ const prevPage = () => {
           <p class="text-sm text-gray-600 mb-2">Age - {{ biodata.age }}</p>
           <p class="text-sm text-gray-600 mb-2">height - {{ biodata.height }}</p>
           <p class="text-sm text-gray-600 mb-4">{{ biodata.description }}</p>
-          <button @click="router.visit(route('matches.profile.view'))" class=" px-4 py-2 rounded-md bg-gradient-to-r from-[#f50536bf] to-[#260000b8] text-white transition duration-200">
+          <button @click="router.visit(route('matches.profile.view', biodata.id))" class=" px-4 py-2 rounded-md bg-gradient-to-r from-[#f50536bf] to-[#260000b8] text-white transition duration-200">
             <i class="bi bi-eye-fill"></i> View Details
           </button>
         </div>

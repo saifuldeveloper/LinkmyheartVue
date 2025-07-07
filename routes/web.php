@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Frontend\AuthController;
+use App\Http\Controllers\Frontend\ConnectionController;
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\MatchesController;
 use App\Http\Controllers\Frontend\PagesController;
@@ -55,14 +56,19 @@ Route::middleware('auth')->group(function () {
 
         Route::post('/partner-preference/update', [MatchesController::class, 'partnerPreferenceUpdate'])->name('partner.preference.update');
         Route::get('/matches', [MatchesController::class, 'matches'])->name(name: 'user.matches');
-        Route::get('/matches/profile/view', [MatchesController::class, 'profileView'])->name('matches.profile.view');
+        Route::get('/matches/profile/view/{id}', [MatchesController::class, 'profileView'])->name('matches.profile.view');
 
 
+        
         Route::get('/user/messages', [UserProfileController::class, 'userMessages'])->name('user.messages');
 
         Route::middleware(['auth'])->group(function () {
             Route::get('/chatify', [\Chatify\Http\Controllers\MessagesController::class, 'index'])->name('chatify');
         });
+
+
+        // connect request 
+         Route::post('/send-request', [ConnectionController::class, 'sendRequest'])->name('send.request');
 
 
 
