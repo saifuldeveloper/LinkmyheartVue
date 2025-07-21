@@ -15,5 +15,5 @@ import Footer from '../../Layouts/Footer.vue';
       </main>
     </div>
   </div>
-      <Footer />
+  <Footer />
 </template>

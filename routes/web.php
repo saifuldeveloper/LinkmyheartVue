@@ -59,7 +59,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/matches/profile/view/{id}', [MatchesController::class, 'profileView'])->name('matches.profile.view');
 
 
-        
+
         Route::get('/user/messages', [UserProfileController::class, 'userMessages'])->name('user.messages');
 
         Route::middleware(['auth'])->group(function () {
@@ -68,10 +68,18 @@ Route::middleware('auth')->group(function () {
 
 
         // connect request 
-         Route::post('/send-request', [ConnectionController::class, 'sendRequest'])->name('send.request');
-         Route::post('/cancel-request', [ConnectionController::class, 'cancelRequest'])->name('cancel.request');
-         Route::post('/accept-request', [ConnectionController::class, 'acceptRequest'])->name('accept.request');
-         Route::post('/disconnect-request', [ConnectionController::class, 'disconnectRequest'])->name('disconnect.request');
+        Route::post('/send-request', [ConnectionController::class, 'sendRequest'])->name('send.request');
+        Route::post('/cancel-request', [ConnectionController::class, 'cancelRequest'])->name('cancel.request');
+        Route::post('/accept-request', [ConnectionController::class, 'acceptRequest'])->name('accept.request');
+        Route::post('/disconnect-request', [ConnectionController::class, 'disconnectRequest'])->name('disconnect.request');
+
+
+        //  connection list
+        Route::get('/send-request-list', [ConnectionController::class, 'sendRequestList'])->name('send.request.list');
+        Route::get('/connection-list', [ConnectionController::class, 'connectionList'])->name('connection.list');
+        Route::get('/pending-request-list', [ConnectionController::class, 'pendingRequestList'])->name('pending.request.list');
+
+
 
 
 

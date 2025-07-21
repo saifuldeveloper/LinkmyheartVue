@@ -468,9 +468,9 @@ const personalInformation = ref(false);
                     </div>
                     <div class="mt-3 flex gap-4 flex-wrap">
                         <span class="bg-white px-3 py-1 rounded-full shadow text-gray-800">Email: {{ user.email
-                            }}</span>
+                        }}</span>
                         <span class="bg-white px-3 py-1 rounded-full shadow text-gray-800">Phone: {{ user.number
-                            }}</span>
+                        }}</span>
                     </div>
                 </div>
 
@@ -519,6 +519,18 @@ const personalInformation = ref(false);
                     <div>
                         <h2 class="font-bold mb-2">Appearance</h2>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label for="form.gender">Gender</label>
+                                <template v-if="personalInformation">
+                                    <select v-model="form.gender" class="w-full p-2 border rounded">
+                                        <option disabled value="">Please Select</option>
+                                        <option>Male</option>
+                                        <option>Female</option>
+                                    </select>
+                                </template>
+                                <p v-else class="text-gray-600">{{ form.gender || 'Please Select' }}</p>
+                            </div>
+
                             <div>
                                 <label for="form.height">height</label>
                                 <template v-if="personalInformation">
@@ -880,7 +892,7 @@ const personalInformation = ref(false);
                                 <select v-model="form.religion" class="w-full rounded-md px-3 py-2 text-[#534d4d]">
                                     <option value="" disabled>Select Religion</option>
                                     <option v-for="religion in religions" :key="religion" :value="religion">{{ religion
-                                    }}</option>
+                                        }}</option>
                                 </select>
                             </div>
                         </div>

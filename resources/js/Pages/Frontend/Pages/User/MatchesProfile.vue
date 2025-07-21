@@ -11,7 +11,6 @@ const viewProfile = page.props.viewProfile || {};
 
 const aMatch = authProfile.user?.match || {};
 const vMatch = viewProfile.user?.match || {};
-
 const isReligionMatch = computed(() => vMatch.religion === aMatch.religion);
 const isMaritalStatusMatch = computed(() => vMatch.marital_status === aMatch.marital_status);
 const isAgeMatch = computed(() => (vMatch.from_age === aMatch.from_age && vMatch.to_age === aMatch.to_age));
@@ -421,8 +420,5 @@ const disconnect = async (connectID) => {
                 </div>
             </div>
         </div>
-
-
-
     </MainWrapper>
 </template>

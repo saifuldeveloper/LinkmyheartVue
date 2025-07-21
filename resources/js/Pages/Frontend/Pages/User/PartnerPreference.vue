@@ -46,7 +46,7 @@ const submit = () => {
                 duration: 3000,
             });
             setTimeout(() => {
-                  Inertia.visit('/user/profile')
+                Inertia.visit('/user/profile')
             }, 5000)
 
         },

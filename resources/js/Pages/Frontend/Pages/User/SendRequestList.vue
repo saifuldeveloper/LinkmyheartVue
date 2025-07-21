@@ -6,7 +6,6 @@ import { router, usePage } from '@inertiajs/vue3'
 const page = usePage()
 const profiles = computed(() => page.props.profiles);
 
-console.log(profiles.value);
 // Pagination Logic
 const itemsPerPage = 30; // Display 9 items per page (3 rows of 3 cards)
 const currentPage = ref(1); // Current active page
@@ -50,13 +49,10 @@ const prevPage = () => {
       <main class="flex-1 p-8 overflow-y-auto">
         <div class="flex justify-between items-center e  p-4 rounded-lg shadow-md mb-6">
           <div class="flex space-x-6 text-gray-700 font-medium">
-            <a href="#" class="border-b-2 border-red-600 pb-2 text-red-600">All Biodata</a>
-            <a href="#" class="pb-2 hover:text-red-600 hover:border-red-600">Biodat No </a>
+            <a href="#" class="border-b-2 border-red-600 pb-2 text-red-600">Send Request List</a>
+
           </div>
-          <div class="text-gray-600 text-sm">
-            <h1 class="text-xl font-bold text-gray-800"> Biodata List</h1>
-            <!-- <p>৭৮০৩ টি বায়োডাটা পাওয়া গেছে!</p> -->
-          </div>
+
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">

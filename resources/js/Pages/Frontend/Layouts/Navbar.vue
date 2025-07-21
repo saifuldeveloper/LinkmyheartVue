@@ -207,8 +207,8 @@ const isHomePage = page.url === '/'
         <li>
           <Link :href="route('support')" class="block px-4 py-2 hover:text-red-600">Support</Link>
         </li>
-        <li class="lg:hidden">
-          <Link href="/loginsection" class="block px-4 py-2 hover:text-red-600">Login</Link>
+        <li class="lg:hidden"> 
+          <Link  href="/loginsection" class="block px-4 py-2 hover:text-red-600">Login</Link>
         </li>
       </ul>
 
@@ -226,9 +226,6 @@ const isHomePage = page.url === '/'
           Join Now
         </button>
       </div>
-
-
-
       <div v-if="showRegister" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <!-- Modal Box -->
         <div class="bg-white w-full  max-w-2xl rounded-xl p-6 shadow-xl relative">

@@ -24,7 +24,7 @@ import { Link, usePage } from '@inertiajs/vue3';
         </section>
         <!-- Filter Form -->
         <section class="">
-            <div class="container mx-auto mt-12 px-20">
+            <div class="container mx-auto mt-12">
                 <div class="search-box">
                     <form>
                         <div class="flex flex-wrap md:flex-nowrap gap-4 justify-center">
