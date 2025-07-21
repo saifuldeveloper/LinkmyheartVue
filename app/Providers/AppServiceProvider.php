@@ -25,6 +25,11 @@ class AppServiceProvider extends ServiceProvider
         Inertia::share([
             'canLogin' => fn() => Route::has('login'),
             'canRegister' => fn() => Route::has('register'),
+            'flash' => function () {
+                return [
+                    'message' => session('message'),
+                ];
+            },
         ]);
     }
 }

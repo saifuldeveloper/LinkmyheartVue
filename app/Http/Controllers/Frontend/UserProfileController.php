@@ -3,22 +3,52 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Models\ConnectionRequest;
 use App\Models\ImageGallery;
+use App\Models\ProfileVisit;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Profile;
 use Carbon\Carbon;
 class UserProfileController extends Controller
 {
 
     public function dashboard()
     {
+        $user = auth()->user();
+        $profileId = Profile::where('user_id', $user->id)->value('id');
+        // connection count
+        $connectionCount = ConnectionRequest::where(function ($query) use ($profileId) {
+            $query->where('sender_id', $profileId)
+                ->orWhere('recipient_id', $profileId);
+        })
+            ->where('status', 1) // ✅ Correct comparison
+            ->count();
+        // send reqest count
+        $SendrequestCount = ConnectionRequest::where('sender_id', $profileId)
+            ->where('status', 0)
+            ->count();
+        // peding request count
+        $pendingRequestCount = ConnectionRequest::where('recipient_id', $profileId)
+            ->where('status', 0)
+            ->count();
+
+
+        // visitor count
+        $visitorCount = ProfileVisit::where('visited_id', $profileId)->count();
+
+      
+
         return Inertia::render(
             'Frontend/Pages/User/Dashboard',
             [
-
+                'connectionCount' => $connectionCount,
+                'SendrequestCount' => $SendrequestCount,
+                'pendingRequestCount' => $pendingRequestCount,
+                'visitorCount' => $visitorCount,
             ]
         );
     }
@@ -40,7 +70,7 @@ class UserProfileController extends Controller
         $user = auth()->user();
         $profile = $user->profile;
         $profileImage = $profile->image
-            ? asset( $profile->image)
+            ? asset($profile->image)
             : asset('user_images/default.png');
         $galleryImages = ImageGallery::where('user_id', $user->id)
             ->get()
@@ -86,7 +116,7 @@ class UserProfileController extends Controller
         // Delete old image if exists
         $profile = $user->profile;
         if ($profile->image) {
-            $oldPath = public_path($profile->image); 
+            $oldPath = public_path($profile->image);
             if (File::exists($oldPath)) {
                 File::delete($oldPath);
             }

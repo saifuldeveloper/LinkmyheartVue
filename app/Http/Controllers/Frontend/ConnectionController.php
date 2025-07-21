@@ -4,35 +4,113 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Models\ConnectionRequest;
+use App\Models\Profile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 class ConnectionController extends Controller
 {
-
     public function sendRequest(Request $request)
     {
-        $exists = ConnectionRequest::where(function ($query) use ($request) {
-            $query->where('sender_id', Auth::id())
-                ->where('recipient_id', $request->recipient_id);
-        })
-            ->orWhere(function ($query) use ($request) {
-                $query->where('sender_id', $request->recipient_id)
-                    ->where('recipient_id', Auth::id());
-            })
-            ->exists();
-
-        if ($exists) {
-            return response()->json(['message' => 'Request already sent'], 409);
-        }
-
-        ConnectionRequest::create([
-            'sender_id' => Auth::id(),
-            'recipient_id' => $request->recipient_id,
-            'status' => 1,
+        $request->validate([
+            'recipient_id' => 'required|exists:users,id',
         ]);
 
-        return response()->json(['message' => 'Request sent successfully']);
+
+        $userId = Profile::where('user_id', Auth::id())->value('id');
+        $recipientId = Profile::where('id', $request->recipient_id)->value('id');
+
+        $exists = ConnectionRequest::where(function ($query) use ($userId, $recipientId) {
+            $query->where('sender_id', $userId)
+                ->where('recipient_id', $recipientId);
+        })->orWhere(function ($query) use ($userId, $recipientId) {
+            $query->where('sender_id', $recipientId)
+                ->where('recipient_id', $userId);
+        })->exists();
+
+        if ($exists) {
+            return back()->with('message', 'Already sent a connection request.');
+        }
+        ConnectionRequest::create([
+            'sender_id' => $userId,
+            'recipient_id' => $recipientId,
+            'status' => 0,
+        ]);
+        return back()->with('message', 'Connection request sent successfully.');
+
     }
+
+    // cancel request
+    public function cancelRequest(Request $request)
+    {
+
+        $request->validate([
+            'recipient_id' => 'required|exists:users,id',
+        ]);
+        $authProfileId = Profile::where('user_id', Auth::id())->value('id');
+        $recipientProfileId = Profile::where('id', $request->recipient_id)->value('id');
+
+        if (!$authProfileId || !$recipientProfileId) {
+            return back()->with('error', 'Profile not found.');
+        }
+        $connection = ConnectionRequest::where(function ($query) use ($authProfileId, $recipientProfileId) {
+            $query->where('sender_id', $authProfileId)
+
+                ->where('recipient_id', $recipientProfileId);
+        })->orWhere(function ($query) use ($authProfileId, $recipientProfileId) {
+            $query->where('sender_id', $recipientProfileId)
+                ->where('recipient_id', $authProfileId);
+
+        })->where('status', 0)
+            ->first();
+
+        if ($connection) {
+            $connection->delete();
+            return back()->with('message', 'Connection request canceled.');
+        }
+
+
+        return back()->with('message', 'No connection request found to cancel.');
+    }
+    // accept request
+    public function acceptRequest(Request $request)
+    {
+        $request->validate([
+            'sender_id' => 'required|exists:users,id', // sender of the request
+        ]);
+        // Get profile IDs
+        $authProfileId = Profile::where('user_id', Auth::id())->value('id');
+        $senderProfileId = Profile::where('id', $request->sender_id)->value('id');
+
+        if (!$authProfileId || !$senderProfileId) {
+            return back()->with('error', 'Profile not found.');
+        }
+
+        // Find the connection request
+        $connection = ConnectionRequest::where('sender_id', $senderProfileId)
+            ->where('recipient_id', $authProfileId)
+            ->where('status', 0) // pending
+            ->first();
+        if (!$connection) {
+            return back()->with('error', 'No pending request found.');
+        }
+        $connection->update([
+            'status' => 1,
+        ]);
+        return back()->with('message', 'Connection request accepted.');
+    }
+
+
+    public function disconnectRequest(Request $request)
+    {
+        $connection = ConnectionRequest::find($request->connectID);
+        if ($connection) {
+            $connection->delete();
+            return back()->with('message', 'Connection request disconnected successfully.');
+        }
+        return back()->with('error', 'No connection request found to disconnect.');
+    }
+
 }

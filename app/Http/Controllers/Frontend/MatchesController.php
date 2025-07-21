@@ -1,8 +1,10 @@
 <?php
 
 namespace App\Http\Controllers\Frontend;
+use App\Models\ConnectionRequest;
 use App\Models\MatchProfile;
 use App\Models\Profile;
+use App\Models\ProfileVisit;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
@@ -17,14 +19,16 @@ class MatchesController extends Controller
     {
 
         $user = Auth::user();
+        $authProfile = Profile::where('user_id', $user->id)->firstOrFail();
         $profiles = Profile::where('user_id', '!=', $user->id)
+            ->where('gender', '!=', $authProfile->gender)
             ->where('status', 1)
             ->with('user')
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($profile) {
                 $profile->image_path = $profile->image
-                    ? asset( $profile->image)
+                    ? asset($profile->image)
                     : asset('images/default-profile.png');
                 return $profile;
             });
@@ -40,18 +44,51 @@ class MatchesController extends Controller
 
     public function profileView(Request $request, $id)
     {
+
         $authProfile = Profile::with('user.match')->where('user_id', Auth::id())->firstOrFail();
+        $authProfileId = $authProfile->id;
         $viewProfile = Profile::with('user.match')->where('id', $id)->firstOrFail();
+        $viewProfileId = $viewProfile->id;
+        // Set fallback images
         $authProfile->image_url = $authProfile->image
-            ? asset( $authProfile->image)
-            : asset('images/profiles/default.png');  // fallback image
-        $viewProfile->image_url = $viewProfile->image
-            ? asset( $viewProfile->image)
+            ? asset($authProfile->image)
             : asset('images/profiles/default.png');
+
+        $viewProfile->image_url = $viewProfile->image
+            ? asset($viewProfile->image)
+            : asset('images/profiles/default.png');
+
+        // Get any existing connection request (sent or received)
+
+        $connection = ConnectionRequest::where(function ($query) use ($authProfileId, $viewProfileId) {
+            $query->where(function ($q) use ($authProfileId, $viewProfileId) {
+                $q->where('sender_id', $authProfileId)
+                    ->where('recipient_id', $viewProfileId);
+            })->orWhere(function ($q) use ($authProfileId, $viewProfileId) {
+                $q->where('sender_id', $viewProfileId)
+                    ->where('recipient_id', $authProfileId);
+            });
+        })->first();
+
+
+        // profile visited count 
+
+        ProfileVisit::firstOrCreate([
+            'visitor_id' => $authProfileId,
+            'visited_id' => $viewProfileId,
+        ]);
+        // Determine connection states
+        $requestSent = $connection && $connection->sender_id === $authProfileId && $connection->status === 0;
+        $requestReceived = $connection && $connection->recipient_id === $authProfileId && $connection->status === 0;
+        $connected = $connection && $connection->status === 1;
 
         return Inertia::render('Frontend/Pages/User/MatchesProfile', [
             'authProfile' => $authProfile,
             'viewProfile' => $viewProfile,
+            'requestSent' => $requestSent,
+            'requestReceived' => $requestReceived,
+            'connection' => $connection,
+            'connected' => $connected,
         ]);
     }
 

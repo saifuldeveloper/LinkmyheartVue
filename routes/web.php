@@ -69,6 +69,9 @@ Route::middleware('auth')->group(function () {
 
         // connect request 
          Route::post('/send-request', [ConnectionController::class, 'sendRequest'])->name('send.request');
+         Route::post('/cancel-request', [ConnectionController::class, 'cancelRequest'])->name('cancel.request');
+         Route::post('/accept-request', [ConnectionController::class, 'acceptRequest'])->name('accept.request');
+         Route::post('/disconnect-request', [ConnectionController::class, 'disconnectRequest'])->name('disconnect.request');
 
 
 

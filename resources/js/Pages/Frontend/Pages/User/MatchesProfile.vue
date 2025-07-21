@@ -3,7 +3,7 @@ import MainWrapper from './MainWrapper.vue';
 import { ref, reactive, computed } from 'vue';
 import { router, usePage } from '@inertiajs/vue3'
 
-
+import { ElNotification } from 'element-plus'
 
 const page = usePage();
 const authProfile = page.props.authProfile || {};
@@ -33,26 +33,134 @@ const matchedCount = computed(() => {
 });
 
 
+
+
 const sending = ref(false);
-const successMessage = ref(null);
-const errorMessage = ref(null);
+const requestSent = ref(page.props.requestSent);
+const requestReceived = ref(page.props.requestReceived);
+const connected = ref(page.props.connected);
+const connection = ref(page.props.connection || {});
+
+
 
 const sendRequest = async (recipientId) => {
-    sending.value = true
+    sending.value = true;
     try {
         await router.post('/user/send-request', {
             recipient_id: recipientId
         }, {
-            preserveScroll: true
-        })
+            preserveScroll: true,
+            onSuccess: () => {
+                const message = page.props.flash?.message;
+                if (message) {
+                    ElNotification({
+                        title: 'Success',
+                        message: message,
+                        type: 'success',
+                        duration: 3000,
+                    });
+                    requestSent.value = true;
+                    requestReceived.value = false;
+                    connected.value = false;
 
+                }
+            }
+        });
     } catch (error) {
-        alert('Something went wrong')
+        ElNotification({
+            title: 'Error',
+            message: 'Something went wrong',
+            type: 'error',
+            duration: 3000,
+        });
     } finally {
-        sending.value = false
+        sending.value = false;
+    }
+};
+// cancel request
+
+const cancelRequest = async (recipientId) => {
+    try {
+        await router.post('/user/cancel-request', {
+            recipient_id: recipientId
+        }, {
+            preserveScroll: true,
+            onSuccess: () => {
+                ElNotification({
+                    title: 'Canceled',
+                    message: 'Connection request canceled.',
+                    type: 'info',
+                    duration: 3000,
+                });
+                requestSent.value = false;
+                requestReceived.value = false;
+                connected.value = false;
+            }
+        });
+    } catch (error) {
+        ElNotification({
+            title: 'Error',
+            message: 'Failed to cancel request.',
+            type: 'error',
+            duration: 3000,
+        });
     }
 }
+const acceptRequest = async (senderId) => {
+    try {
+        await router.post('/user/accept-request', {
+            sender_id: senderId
+        }, {
+            preserveScroll: true,
+            onSuccess: () => {
+                const message = page.props.flash?.message || 'Connection request accepted.';
+                ElNotification({
+                    title: 'Accepted',
+                    message,
+                    type: 'success',
+                    duration: 3000,
+                });
 
+                requestReceived.value = false;
+                connected.value = true;
+            }
+        });
+    } catch (error) {
+        ElNotification({
+            title: 'Error',
+            message: 'Failed to accept connection request.',
+            type: 'error',
+            duration: 3000,
+        });
+    }
+};
+
+// Disconnect
+const disconnect = async (connectID) => {
+    try {
+        await router.post('/user/disconnect-request', {
+            connectID: connectID
+        }, {
+            preserveScroll: true,
+            onSuccess: () => {
+                ElNotification({
+                    title: 'Disconnected',
+                    message: 'You are no longer connected.',
+                    type: 'warning',
+                    duration: 3000,
+                });
+                connected.value = false;
+            }
+        });
+    } catch (error) {
+        ElNotification({
+            title: 'Error',
+            message: 'Failed to disconnect.',
+            type: 'error',
+            duration: 3000,
+        });
+    }
+};
 
 </script>
 <template>
@@ -82,11 +190,46 @@ const sendRequest = async (recipientId) => {
                                 <p>Religion: <span class="font-semibold">{{ viewProfile.religion }}</span></p>
                                 <p>Address: <span class="font-semibold">{{ viewProfile.location }}</span></p>
                             </div>
-                            <button :disabled="sending" @click="sendRequest(viewProfile.user.id)"
-                                class="absolute top-4 right-4 bg-white text-rose-500 border border-white rounded-full px-4 py-1 font-semibold hover:bg-rose-100">
-                                <span v-if="sending">Sending...</span>
-                                <span v-else>Send Request 👥</span>
-                            </button>
+                            <!-- If request is not sent -->
+                            <!-- Connected -->
+                            <div class="absolute top-4 right-4 space-x-2">
+                                <!-- Connected -->
+
+                                <template v-if="connected">
+                                    <button
+                                        class="bg-white text-green-600 border border-white rounded-full px-4 py-1 font-semibold hover:bg-green-100 cursor-default"
+                                        disabled>
+                                        ✅ Connected
+                                    </button>
+                                    <button @click="disconnect(connection.id)"
+                                        class="bg-white text-rose-500 border border-white rounded-full px-4 py-1 font-semibold hover:bg-rose-100">
+                                        ❌ Disconnect
+                                    </button>
+                                </template>
+                                <!-- Request Received -->
+                                <template v-else-if="requestReceived">
+                                    <button @click="acceptRequest(viewProfile.id)"
+                                        class=" bg-white text-rose-500 border border-white rounded-full px-4 py-1 font-semibold hover:bg-rose-100">
+                                        ✅ Accept
+                                    </button>
+                                    <button @click="cancelRequest(viewProfile.id)"
+                                        class=" bg-white text-rose-500 border border-white rounded-full px-4 py-1 font-semibold hover:bg-rose-100">
+                                        ❌ Cancel
+                                    </button>
+                                </template>
+
+                                <!-- Request Sent -->
+                                <button v-else-if="requestSent" @click="cancelRequest(viewProfile.id)"
+                                    class=" bg-white text-rose-500 border border-white rounded-full px-4 py-1 font-semibold hover:bg-rose-100">
+                                    ❌ Cancel Request
+                                </button>
+                                <!-- No Connection Yet -->
+                                <button v-else @click="sendRequest(viewProfile.id)"
+                                    class=" bg-white text-rose-500 border border-white rounded-full px-4 py-1 font-semibold hover:bg-rose-100">
+                                    👥 Send Request
+                                </button>
+                            </div>
+
                         </div>
 
                         <!-- Intro -->
