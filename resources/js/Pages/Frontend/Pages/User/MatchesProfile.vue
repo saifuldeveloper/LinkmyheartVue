@@ -197,9 +197,9 @@ const disconnect = async (connectID) => {
 
                                 <template v-if="connected">
                                     <button
-                                        class="bg-white text-green-600 border border-white rounded-full px-4 py-1 font-semibold hover:bg-green-100 cursor-default"
+                                        class="bg-white text-rose-500 border border-white rounded-full px-4 py-1 font-semibold hover:bg-rose-100"
                                         disabled>
-                                        ✅ Connected
+                                        💬 Send Message
                                     </button>
                                     <button @click="disconnect(connection.id)"
                                         class="bg-white text-rose-500 border border-white rounded-full px-4 py-1 font-semibold hover:bg-rose-100">
@@ -228,7 +228,9 @@ const disconnect = async (connectID) => {
                                     class=" bg-white text-rose-500 border border-white rounded-full px-4 py-1 font-semibold hover:bg-rose-100">
                                     👥 Send Request
                                 </button>
+
                             </div>
+
 
                         </div>
 
@@ -257,9 +259,9 @@ const disconnect = async (connectID) => {
                                 <div class="bg-blue-100 px-3 py-2 rounded">Weight: <strong>{{ viewProfile.height }}
                                         Kg</strong></div>
                                 <div class="bg-blue-100 px-3 py-2 rounded">Body Type: <strong>{{ viewProfile.body_type
-                                        }}</strong></div>
+                                }}</strong></div>
                                 <div class="bg-blue-100 px-3 py-2 rounded">Complexion: <strong>{{ viewProfile.complexion
-                                        }}</strong></div>
+                                }}</strong></div>
                                 <div class="bg-blue-100 px-3 py-2 rounded">Blood Group: <strong>{{
                                     viewProfile.blood_group
                                         }}</strong></div>
@@ -293,7 +295,7 @@ const disconnect = async (connectID) => {
                             <h3 class="border-t border-rose-300  text-lg font-bold text-rose-500 mb-2">Work :</h3>
                             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                 <div class="bg-blue-100 px-3 py-2 rounded">Profession: <strong>{{ viewProfile.profession
-                                        }}</strong>
+                                }}</strong>
                                 </div>
                                 <div class="bg-blue-100 px-3 py-2 rounded">Designation: <strong>{{
                                     viewProfile.designation
@@ -408,7 +410,7 @@ const disconnect = async (connectID) => {
                                 <div class="text-right sm:pr-2 text-rose-500 font-semibold">Height :</div>
                                 <div class="col-span-2 flex justify-between border-b border-rose-200 pb-1">
                                     <span class="text-gray-700">{{ vMatch.height_from }} Inch to {{ vMatch.height_to
-                                        }} Inch</span>
+                                    }} Inch</span>
                                     <span :class="isHeightMatch ? 'text-green-500' : 'text-red-500'">
                                         <i :class="isHeightMatch ? 'fas fa-check' : 'fas fa-times'"></i>
                                     </span>
