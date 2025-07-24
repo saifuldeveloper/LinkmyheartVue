@@ -40,7 +40,7 @@ class UserProfileController extends Controller
         // visitor count
         $visitorCount = ProfileVisit::where('visited_id', $profileId)->count();
 
-      
+
 
         return Inertia::render(
             'Frontend/Pages/User/Dashboard',
@@ -284,9 +284,12 @@ class UserProfileController extends Controller
 
     public function userMessages()
     {
-
         return Inertia::render('Frontend/Pages/User/Messages');
-
     }
-
+    public function userMessagesView($id)
+    {
+        return Inertia::render('Frontend/Pages/User/Messages', [
+            'chatId' => $id,
+        ]);
+    }
 }

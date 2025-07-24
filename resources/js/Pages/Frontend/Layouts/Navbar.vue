@@ -161,7 +161,7 @@ function resetForm() {
   otp.value = ['', '', '', '', '', '']
 }
 
-
+const showAuthMenu = ref(false);
 
 // home page nav deisng 
 const page = usePage()
@@ -207,50 +207,94 @@ const isHomePage = page.url === '/'
         <li>
           <Link :href="route('support')" class="block px-4 py-2 hover:text-red-600">Support</Link>
         </li>
-        <li class="lg:hidden"> 
-          <Link  href="/loginsection" class="block px-4 py-2 hover:text-red-600">Login</Link>
+        <li class="lg:hidden">
+          <Link href="/loginsection" class="block px-4 py-2 hover:text-red-600">Login</Link>
         </li>
       </ul>
 
-      <button v-if="user" @click="router.visit('/user/dashboard')"
-        class="hidden lg:inline-block px-5 py-3 text-sm text-[#d91414de] bg-[#fbf7f791] border-2 border-[#c64b64] rounded-[12px] transition duration-200">
-        Dashboard
-      </button>
-      <!-- If not logged in, show Join Now -->
-      <div v-else class="d-flex">
-        <button class="hidden lg:inline-block px-5 py-3   text-lg" @click="router.visit('/login')">
-          Login
-        </button>
-        <button @click="showRegister = true"
-          class="hidden lg:inline-block px-5 py-3 text-sm text-[#d91414de] bg-[#fbf7f791] border-2 border-[#c64b64] rounded-[12px] transition duration-200">
-          Join Now
-        </button>
-      </div>
-      <div v-if="showRegister" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <!-- Modal Box -->
-        <div class="bg-white w-full  max-w-2xl rounded-xl p-6 shadow-xl relative">
-          <!-- Close Button -->
-          <button @click="resetForm" class="absolute top-3 right-4 text-gray-500 hover:text-red-500 text-xl">
-            &times;
+
+
+      <!-- User Auth Controls -->
+      <div class="relative hidden lg:inline-block">
+        <!-- If user is logged in -->
+        <template v-if="user">
+          <!-- Dashboard Button -->
+          <button @click="showAuthMenu = !showAuthMenu"
+            class="px-5 py-3 text-sm text-[#d91414de] bg-[#fbf7f791] border-2 border-[#c64b64] rounded-[12px] transition duration-200">
+            Dashboard
           </button>
 
-          <!-- Modal Header -->
+          <!-- User Dropdown Menu -->
+          <div v-if="showAuthMenu"
+            class="absolute top-full left-0 mt-2 w-48 bg-white border border-gray-200 rounded shadow-lg z-50">
+            <ul class="text-sm text-gray-700">
+              <li>
+                <Link :href="route('partner.preference')" class="block px-4 py-2 hover:bg-gray-100">Dashboard</Link>
+              </li>
+               <li>
+                <Link :href="route('user.matches')" class="block px-4 py-2 hover:bg-gray-100">Matches</Link>
+              </li>
+               <li>
+                <Link :href="route('user.messages')"  class="block px-4 py-2 hover:bg-gray-100">Messages</Link>
+              </li>
+               <li>
+                <Link :href="route('profile.edit')"  class="block px-4 py-2 hover:bg-gray-100">Profile</Link>
+              </li>
+              <li>
+                <Link :href="route('verify.account')" class="block px-4 py-2 hover:bg-gray-100">Verification</Link>
+              </li>
+              <li>
+                <Link :href="route('user.profile.contact')" class="block px-4 py-2 hover:bg-gray-100">Profile Contact</Link>
+              </li>
+              <li>
+                <Link :href="route('partner.preference')" class="block px-4 py-2 hover:bg-gray-100">  Partner Preference  </Link>
+              </li>
+              <li>
+                <Link method="POST"  :href="route('logout.user')" class="block px-4 py-2 hover:bg-gray-100">  <i class="fas fa-sign-out-alt w-5"></i>Logout</Link>
+              </li>
+            </ul>
+          </div>
+        </template>
+
+        <!-- If not logged in -->
+        <template v-else>
+          <div class="d-flex space-x-2">
+            <button class="px-5 py-3 text-lg" @click="router.visit('/login')">
+              Login
+            </button>
+            <button @click="showRegister = true"
+              class="px-5 py-3 text-sm text-[#d91414de] bg-[#fbf7f791] border-2 border-[#c64b64] rounded-[12px] transition duration-200">
+              Join Now
+            </button>
+          </div>
+        </template>
+      </div>
+      <!-- Right Side: Auth Buttons or Dashboard -->
+
+
+
+
+
+
+      <!-- Registration Modal -->
+      <div v-if="showRegister" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white w-full max-w-2xl rounded-xl p-6 shadow-xl relative">
+          <button @click="resetForm"
+            class="absolute top-3 right-4 text-gray-500 hover:text-red-500 text-xl">&times;</button>
+
           <h2 class="text-2xl font-semibold text-center text-red-600 mb-6">
             {{ step === 1 ? 'Create Account' : step === 2 ? 'Verify OTP' : 'Set Password' }}
           </h2>
 
-          <!-- Step 1: Registration Form -->
+          <!-- Step 1: Registration -->
           <form v-if="step === 1" @submit.prevent="OtpVerify" class="space-y-4">
             <div class="flex gap-4">
-              <!-- Name -->
               <div class="w-1/2">
                 <label class="block mb-1 text-sm text-gray-700">Full Name</label>
                 <input v-model="form.name" type="text"
                   class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-pink-400"
                   placeholder="Enter your full name" required />
               </div>
-
-              <!-- Gender -->
               <div class="w-1/2">
                 <label class="block mb-1 text-sm text-gray-700">Gender</label>
                 <select v-model="form.gender"
@@ -270,7 +314,7 @@ const isHomePage = page.url === '/'
                 placeholder="Enter your phone" required />
             </div>
             <button type="submit"
-              class="w-full border-[#dddd] bg-gradient-to-r from-[#f50536bf] to-[#260000b8] text-white font-semibold py-3 rounded-md transition-all duration-200">
+              class="w-full bg-gradient-to-r from-[#f50536bf] to-[#260000b8] text-white font-semibold py-3 rounded-md">
               Continue
             </button>
           </form>
@@ -280,51 +324,42 @@ const isHomePage = page.url === '/'
             <p class="text-sm text-gray-600 text-center mb-2">
               We’ve sent an OTP to <strong>{{ form.phone }}</strong>
             </p>
-
             <div class="text-center gap-5 px-15">
               <input v-for="(digit, i) in 6" :key="i" v-model="otp[i]" ref="otpRefs" maxlength="1" type="text"
                 class="w-12 h-12 mx-1 text-center border rounded" @input="e => moveNext(i, e)"
                 @keydown.backspace="e => movePrev(i, e)" />
             </div>
-
             <button type="submit"
-              class="w-full border-[#dddd] bg-gradient-to-r from-[#f50536bf] to-[#260000b8] text-white font-semibold py-3 rounded-md transition-all duration-200">
+              class="w-full bg-gradient-to-r from-[#f50536bf] to-[#260000b8] text-white font-semibold py-3 rounded-md">
               Verify OTP
             </button>
-
             <p class="text-sm text-center text-gray-600 mt-3">
               Didn’t receive code?
               <button type="button" class="text-red-600 hover:underline ml-1">Resend</button>
             </p>
           </form>
 
-          <!-- / Setp -3 Password set -->
+          <!-- Step 3: Set Password -->
           <form v-else-if="step === 3" @submit.prevent="registerUser" class="space-y-4">
-            <p class="text-sm text-gray-600 text-center mb-2">Set Password<strong></strong>
-            </p>
-            <div class="space-y-4">
-              <div>
-                <label class="block mb-1 text-sm text-gray-700">Password</label>
-                <input v-model="form.password" type="password"
-                  class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-400"
-                  placeholder="Enter your password" required />
-              </div>
-              <div>
-                <label class="block mb-1 text-sm text-gray-700">Confirm Password</label>
-                <input v-model="form.password_confirmation" type="password"
-                  class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-400"
-                  placeholder="Confirm your password" required />
-              </div>
-
-              <button type="submit"
-                class="w-full border-[#dddd] bg-gradient-to-r from-[#f50536bf] to-[#260000b8] text-white font-semibold py-3 rounded-md transition-all duration-200">
-                Complete Registration
-              </button>
+            <div>
+              <label class="block mb-1 text-sm text-gray-700">Password</label>
+              <input v-model="form.password" type="password"
+                class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-400"
+                placeholder="Enter your password" required />
             </div>
+            <div>
+              <label class="block mb-1 text-sm text-gray-700">Confirm Password</label>
+              <input v-model="form.password_confirmation" type="password"
+                class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-400"
+                placeholder="Confirm your password" required />
+            </div>
+            <button type="submit"
+              class="w-full bg-gradient-to-r from-[#f50536bf] to-[#260000b8] text-white font-semibold py-3 rounded-md">
+              Complete Registration
+            </button>
           </form>
         </div>
       </div>
-
     </nav>
   </div>
   <hr v-if="!isHomePage" class="top-Header-bottom-border" />

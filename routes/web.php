@@ -61,12 +61,8 @@ Route::middleware('auth')->group(function () {
 
 
         Route::get('/user/messages', [UserProfileController::class, 'userMessages'])->name('user.messages');
-
-        Route::middleware(['auth'])->group(function () {
-            Route::get('/chatify', [\Chatify\Http\Controllers\MessagesController::class, 'index'])->name('chatify');
-        });
-
-
+        Route::get('/user/message/{id}', [UserProfileController::class, 'userMessagesView'])->name('user.messages.view');
+  
         // connect request 
         Route::post('/send-request', [ConnectionController::class, 'sendRequest'])->name('send.request');
         Route::post('/cancel-request', [ConnectionController::class, 'cancelRequest'])->name('cancel.request');

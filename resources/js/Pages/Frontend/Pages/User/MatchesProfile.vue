@@ -1,7 +1,7 @@
 <script setup>
 import MainWrapper from './MainWrapper.vue';
 import { ref, reactive, computed } from 'vue';
-import { router, usePage } from '@inertiajs/vue3'
+import { Link, router, usePage } from '@inertiajs/vue3'
 
 import { ElNotification } from 'element-plus'
 
@@ -11,6 +11,7 @@ const viewProfile = page.props.viewProfile || {};
 
 const aMatch = authProfile.user?.match || {};
 const vMatch = viewProfile.user?.match || {};
+
 const isReligionMatch = computed(() => vMatch.religion === aMatch.religion);
 const isMaritalStatusMatch = computed(() => vMatch.marital_status === aMatch.marital_status);
 const isAgeMatch = computed(() => (vMatch.from_age === aMatch.from_age && vMatch.to_age === aMatch.to_age));
@@ -195,11 +196,11 @@ const disconnect = async (connectID) => {
                                 <!-- Connected -->
 
                                 <template v-if="connected">
-                                    <button
-                                        class="bg-white text-rose-500 border border-white rounded-full px-4 py-1 font-semibold hover:bg-rose-100"
+                                    <Link :href="route('user.messages.view', viewProfile.user.id)"
+                                        class="bg-white text-rose-500 border border-white rounded-full px-4 py-2 font-semibold hover:bg-rose-100"
                                         disabled>
                                         💬 Send Message
-                                    </button>
+                                    </Link>
                                     <button @click="disconnect(connection.id)"
                                         class="bg-white text-rose-500 border border-white rounded-full px-4 py-1 font-semibold hover:bg-rose-100">
                                         ❌ Disconnect
@@ -420,5 +421,8 @@ const disconnect = async (connectID) => {
                 </div>
             </div>
         </div>
+
+
+
     </MainWrapper>
 </template>
